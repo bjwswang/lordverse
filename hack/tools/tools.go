@@ -1,3 +1,6 @@
+//go:build tools
+// +build tools
+
 /*
 Copyright 2023 The Bestchains Authors.
 
@@ -14,19 +17,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package params
+package tools
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/codec/types"
+	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
 )
-
-// EncodingConfig specifies the concrete encoding types to use for a given app.
-// This is provided for compatibility between protobuf and amino implementations.
-type EncodingConfig struct {
-	InterfaceRegistry types.InterfaceRegistry
-	Marshaler         codec.Codec
-	TxConfig          client.TxConfig
-	Amino             *codec.LegacyAmino
-}
