@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package lordverse.lordverse;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "lordverse/lordverse/params.proto";
+import "lordverse/lordverse/land.proto";
+
+option go_package = "lordverse/x/lordverse/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  
+  // Parameters queries the parameters of the module.
+  rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/lordverse/lordverse/params";
+  
+  }
+  
+  // Queries a list of Land items.
+  rpc Land    (QueryGetLandRequest) returns (QueryGetLandResponse) {
+    option (google.api.http).get = "/lordverse/lordverse/land/{id}";
+  
+  }
+  rpc LandAll (QueryAllLandRequest) returns (QueryAllLandResponse) {
+    option (google.api.http).get = "/lordverse/lordverse/land";
+  
+  }
+}
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetLandRequest {
+  uint64 id = 1;
+}
+
+message QueryGetLandResponse {
+  Land Land = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllLandRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllLandResponse {
+  repeated Land                                   Land       = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+

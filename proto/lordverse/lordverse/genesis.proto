@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package lordverse.lordverse;
+
+import "gogoproto/gogo.proto";
+import "lordverse/lordverse/params.proto";
+import "lordverse/lordverse/land.proto";
+
+option go_package = "lordverse/x/lordverse/types";
+
+// GenesisState defines the lordverse module's genesis state.
+message GenesisState {
+           Params params    = 1 [(gogoproto.nullable) = false];
+  repeated Land   landList  = 2 [(gogoproto.nullable) = false];
+           uint64 landCount = 3;
+}
+

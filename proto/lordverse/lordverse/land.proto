@@ -1,0 +1,14 @@
+syntax = "proto3";
+package lordverse.lordverse;
+
+option go_package = "lordverse/x/lordverse/types";
+
+message Land {
+  uint64 id = 1;
+  string owner = 2; 
+  string location = 3; 
+  string grade = 4; 
+  string assessment = 5; 
+  string extra = 6; 
+  string creator = 7;
+}

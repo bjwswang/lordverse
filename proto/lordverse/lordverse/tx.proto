@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package lordverse.lordverse;
+
+import "lordverse/lordverse/land.proto";
+
+option go_package = "lordverse/x/lordverse/types";
+
+// Msg defines the Msg service.
+service Msg {
+  rpc CreateLand (MsgCreateLand) returns (MsgCreateLandResponse);
+  rpc UpdateLand (MsgUpdateLand) returns (MsgUpdateLandResponse);
+  rpc DeleteLand (MsgDeleteLand) returns (MsgDeleteLandResponse);
+}
+message MsgCreateLand {
+  string creator    = 1;
+  string owner      = 2;
+  string location   = 3;
+  string grade      = 4;
+  string assessment = 5;
+  string extra      = 6;
+}
+
+message MsgCreateLandResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateLand {
+  string creator    = 1;
+  uint64 id         = 2;
+  string owner      = 3;
+  string location   = 4;
+  string grade      = 5;
+  string assessment = 6;
+  string extra      = 7;
+}
+
+message MsgUpdateLandResponse {}
+
+message MsgDeleteLand {
+  string creator = 1;
+  uint64 id      = 2;
+}
+
+message MsgDeleteLandResponse {}
+
