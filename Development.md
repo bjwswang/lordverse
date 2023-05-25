@@ -24,6 +24,12 @@ Typical steps to use `ignite cli` for cosmos development.
     ignite scaffold list Land owner location grade assessment extra  --module lordverse
 ```
 
+### 4. Define a Type
+
+```shell
+    ignite scaffold type Voter Address Weight --module dao
+```
+
 ## Client/Application Development
 
 <https://docs.ignite.com/clients/go-client>

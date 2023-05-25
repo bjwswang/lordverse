@@ -1,0 +1,10 @@
+syntax = "proto3";
+package lordverse.dao;
+
+option go_package = "lordverse/x/dao/types";
+
+message Voter {
+  
+  string address = 1; 
+  string weight = 2; 
+}

@@ -1,0 +1,7 @@
+syntax = "proto3";
+package lordverse.dao;
+
+option go_package = "lordverse/x/dao/types";
+
+// Msg defines the Msg service.
+service Msg {}

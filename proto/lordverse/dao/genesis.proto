@@ -1,0 +1,12 @@
+syntax = "proto3";
+package lordverse.dao;
+
+import "gogoproto/gogo.proto";
+import "lordverse/dao/params.proto";
+
+option go_package = "lordverse/x/dao/types";
+
+// GenesisState defines the dao module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
