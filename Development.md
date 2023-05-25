@@ -36,3 +36,4 @@ TODO...
 
 1. [awesome-cosmos](https://github.com/cosmos/awesome-cosmos)
 2. [ping-pub/explorer](https://github.com/ping-pub/explorer) Light explorer for Cosmos-based Blockchains
+3. [evmos](https://docs.evmos.org/)
