@@ -1,0 +1,13 @@
+syntax = "proto3";
+package lordverse.dao;
+
+option go_package = "lordverse/x/dao/types";
+
+message Warehouse {
+  uint64 id = 1;
+  // ids of the voters in the warehouse
+  string voters = 2; 
+  string threshold = 3; 
+  string active = 4; 
+  string creator = 5;
+}

@@ -1,12 +1,26 @@
 syntax = "proto3";
+
 package lordverse.dao;
 
 import "gogoproto/gogo.proto";
 import "lordverse/dao/params.proto";
+import "lordverse/dao/warehouse.proto";
+import "lordverse/dao/vote.proto";
+import "lordverse/dao/proposal.proto";
+import "lordverse/dao/voter.proto";
 
 option go_package = "lordverse/x/dao/types";
 
 // GenesisState defines the dao module's genesis state.
 message GenesisState {
-  Params params = 1 [(gogoproto.nullable) = false];
+           Params    params         = 1 [(gogoproto.nullable) = false];
+  repeated Warehouse warehouseList  = 2 [(gogoproto.nullable) = false];
+           uint64    warehouseCount = 3;
+  repeated Vote      voteList       = 4 [(gogoproto.nullable) = false];
+           uint64    voteCount      = 5;
+  repeated Proposal  proposalList   = 6 [(gogoproto.nullable) = false];
+           uint64    proposalCount  = 7;
+  repeated Voter     voterList      = 8 [(gogoproto.nullable) = false];
+           uint64    voterCount     = 9;
 }
+

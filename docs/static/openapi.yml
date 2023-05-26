@@ -46219,6 +46219,748 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
+  /lordverse/dao/proposal:
+    get:
+      operationId: LordverseDaoProposalAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Proposal:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    startAt:
+                      type: string
+                    endAt:
+                      type: string
+                    status:
+                      type: string
+                      enum:
+                        - PROPOSAL_STATUS_UNSPECIFIED
+                        - PROPOSAL_STATUS_SUCCESS
+                        - PROPOSAL_STATUS_FAILED
+                        - PROPOSAL_STATUS_CANCELLED
+                        - PROPOSAL_STATUS_EXPIRED
+                        - PROPOSAL_STATUS_EXECUTED
+                      default: PROPOSAL_STATUS_UNSPECIFIED
+                    creator:
+                      type: string
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /lordverse/dao/proposal/{id}:
+    get:
+      summary: Queries a list of Proposal items.
+      operationId: LordverseDaoProposal
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Proposal:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  startAt:
+                    type: string
+                  endAt:
+                    type: string
+                  status:
+                    type: string
+                    enum:
+                      - PROPOSAL_STATUS_UNSPECIFIED
+                      - PROPOSAL_STATUS_SUCCESS
+                      - PROPOSAL_STATUS_FAILED
+                      - PROPOSAL_STATUS_CANCELLED
+                      - PROPOSAL_STATUS_EXPIRED
+                      - PROPOSAL_STATUS_EXECUTED
+                    default: PROPOSAL_STATUS_UNSPECIFIED
+                  creator:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /lordverse/dao/vote:
+    get:
+      operationId: LordverseDaoVoteAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Vote:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    decision:
+                      type: string
+                      enum:
+                        - VOTE_TYPE_UNSPECIFIED
+                        - VOTE_TYPE_YES
+                        - VOTE_TYPE_NO
+                      default: VOTE_TYPE_UNSPECIFIED
+                    creator:
+                      type: string
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /lordverse/dao/vote/{id}:
+    get:
+      summary: Queries a list of Vote items.
+      operationId: LordverseDaoVote
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Vote:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  decision:
+                    type: string
+                    enum:
+                      - VOTE_TYPE_UNSPECIFIED
+                      - VOTE_TYPE_YES
+                      - VOTE_TYPE_NO
+                    default: VOTE_TYPE_UNSPECIFIED
+                  creator:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /lordverse/dao/voter:
+    get:
+      operationId: LordverseDaoVoterAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Voter:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    weight:
+                      type: integer
+                      format: int64
+                    creator:
+                      type: string
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /lordverse/dao/voter/{id}:
+    get:
+      summary: Queries a list of Voter items.
+      operationId: LordverseDaoVoter
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Voter:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  weight:
+                    type: integer
+                    format: int64
+                  creator:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /lordverse/dao/warehouse:
+    get:
+      operationId: LordverseDaoWarehouseAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Warehouse:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    voters:
+                      type: string
+                      title: ids of the voters in the warehouse
+                    threshold:
+                      type: string
+                    active:
+                      type: string
+                    creator:
+                      type: string
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /lordverse/dao/warehouse/{id}:
+    get:
+      summary: Queries a list of Warehouse items.
+      operationId: LordverseDaoWarehouse
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Warehouse:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  voters:
+                    type: string
+                    title: ids of the voters in the warehouse
+                  threshold:
+                    type: string
+                  active:
+                    type: string
+                  creator:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
   /lordverse/lordverse/land:
     get:
       operationId: LordverseLordverseLandAll
@@ -75120,9 +75862,357 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
+  lordverse.dao.MsgCreateProposalResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+  lordverse.dao.MsgCreateVoteResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+  lordverse.dao.MsgCreateVoterResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+  lordverse.dao.MsgCreateWarehouseResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+  lordverse.dao.MsgDeleteProposalResponse:
+    type: object
+  lordverse.dao.MsgDeleteVoteResponse:
+    type: object
+  lordverse.dao.MsgDeleteVoterResponse:
+    type: object
+  lordverse.dao.MsgDeleteWarehouseResponse:
+    type: object
+  lordverse.dao.MsgExecuteProposalResponse:
+    type: object
+  lordverse.dao.MsgUpdateProposalResponse:
+    type: object
+  lordverse.dao.MsgUpdateVoteResponse:
+    type: object
+  lordverse.dao.MsgUpdateVoterResponse:
+    type: object
+  lordverse.dao.MsgUpdateWarehouseResponse:
+    type: object
   lordverse.dao.Params:
     type: object
     description: Params defines the parameters for the module.
+  lordverse.dao.Proposal:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+      title:
+        type: string
+      description:
+        type: string
+      startAt:
+        type: string
+      endAt:
+        type: string
+      status:
+        type: string
+        enum:
+          - PROPOSAL_STATUS_UNSPECIFIED
+          - PROPOSAL_STATUS_SUCCESS
+          - PROPOSAL_STATUS_FAILED
+          - PROPOSAL_STATUS_CANCELLED
+          - PROPOSAL_STATUS_EXPIRED
+          - PROPOSAL_STATUS_EXECUTED
+        default: PROPOSAL_STATUS_UNSPECIFIED
+      creator:
+        type: string
+  lordverse.dao.ProposalStatus:
+    type: string
+    enum:
+      - PROPOSAL_STATUS_UNSPECIFIED
+      - PROPOSAL_STATUS_SUCCESS
+      - PROPOSAL_STATUS_FAILED
+      - PROPOSAL_STATUS_CANCELLED
+      - PROPOSAL_STATUS_EXPIRED
+      - PROPOSAL_STATUS_EXECUTED
+    default: PROPOSAL_STATUS_UNSPECIFIED
+  lordverse.dao.QueryAllProposalResponse:
+    type: object
+    properties:
+      Proposal:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            title:
+              type: string
+            description:
+              type: string
+            startAt:
+              type: string
+            endAt:
+              type: string
+            status:
+              type: string
+              enum:
+                - PROPOSAL_STATUS_UNSPECIFIED
+                - PROPOSAL_STATUS_SUCCESS
+                - PROPOSAL_STATUS_FAILED
+                - PROPOSAL_STATUS_CANCELLED
+                - PROPOSAL_STATUS_EXPIRED
+                - PROPOSAL_STATUS_EXECUTED
+              default: PROPOSAL_STATUS_UNSPECIFIED
+            creator:
+              type: string
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  lordverse.dao.QueryAllVoteResponse:
+    type: object
+    properties:
+      Vote:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            decision:
+              type: string
+              enum:
+                - VOTE_TYPE_UNSPECIFIED
+                - VOTE_TYPE_YES
+                - VOTE_TYPE_NO
+              default: VOTE_TYPE_UNSPECIFIED
+            creator:
+              type: string
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  lordverse.dao.QueryAllVoterResponse:
+    type: object
+    properties:
+      Voter:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            weight:
+              type: integer
+              format: int64
+            creator:
+              type: string
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  lordverse.dao.QueryAllWarehouseResponse:
+    type: object
+    properties:
+      Warehouse:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            voters:
+              type: string
+              title: ids of the voters in the warehouse
+            threshold:
+              type: string
+            active:
+              type: string
+            creator:
+              type: string
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  lordverse.dao.QueryGetProposalResponse:
+    type: object
+    properties:
+      Proposal:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uint64
+          title:
+            type: string
+          description:
+            type: string
+          startAt:
+            type: string
+          endAt:
+            type: string
+          status:
+            type: string
+            enum:
+              - PROPOSAL_STATUS_UNSPECIFIED
+              - PROPOSAL_STATUS_SUCCESS
+              - PROPOSAL_STATUS_FAILED
+              - PROPOSAL_STATUS_CANCELLED
+              - PROPOSAL_STATUS_EXPIRED
+              - PROPOSAL_STATUS_EXECUTED
+            default: PROPOSAL_STATUS_UNSPECIFIED
+          creator:
+            type: string
+  lordverse.dao.QueryGetVoteResponse:
+    type: object
+    properties:
+      Vote:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uint64
+          decision:
+            type: string
+            enum:
+              - VOTE_TYPE_UNSPECIFIED
+              - VOTE_TYPE_YES
+              - VOTE_TYPE_NO
+            default: VOTE_TYPE_UNSPECIFIED
+          creator:
+            type: string
+  lordverse.dao.QueryGetVoterResponse:
+    type: object
+    properties:
+      Voter:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uint64
+          weight:
+            type: integer
+            format: int64
+          creator:
+            type: string
+  lordverse.dao.QueryGetWarehouseResponse:
+    type: object
+    properties:
+      Warehouse:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uint64
+          voters:
+            type: string
+            title: ids of the voters in the warehouse
+          threshold:
+            type: string
+          active:
+            type: string
+          creator:
+            type: string
   lordverse.dao.QueryParamsResponse:
     type: object
     properties:
@@ -75130,6 +76220,54 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  lordverse.dao.Vote:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+      decision:
+        type: string
+        enum:
+          - VOTE_TYPE_UNSPECIFIED
+          - VOTE_TYPE_YES
+          - VOTE_TYPE_NO
+        default: VOTE_TYPE_UNSPECIFIED
+      creator:
+        type: string
+  lordverse.dao.VoteType:
+    type: string
+    enum:
+      - VOTE_TYPE_UNSPECIFIED
+      - VOTE_TYPE_YES
+      - VOTE_TYPE_NO
+    default: VOTE_TYPE_UNSPECIFIED
+  lordverse.dao.Voter:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+      weight:
+        type: integer
+        format: int64
+      creator:
+        type: string
+  lordverse.dao.Warehouse:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+      voters:
+        type: string
+        title: ids of the voters in the warehouse
+      threshold:
+        type: string
+      active:
+        type: string
+      creator:
+        type: string
   lordverse.lordverse.Land:
     type: object
     properties:
@@ -75157,8 +76295,6 @@ definitions:
   lordverse.lordverse.MsgDeleteLandResponse:
     type: object
   lordverse.lordverse.MsgUpdateLandResponse:
-    type: object
-  lordverse.lordverse.MsgWareHouseResponse:
     type: object
   lordverse.lordverse.Params:
     type: object

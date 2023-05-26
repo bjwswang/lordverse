@@ -1,7 +1,158 @@
 syntax = "proto3";
+
 package lordverse.dao;
+
+import "lordverse/dao/warehouse.proto";
+import "lordverse/dao/vote.proto";
+import "lordverse/dao/proposal.proto";
+import "lordverse/dao/voter.proto";
 
 option go_package = "lordverse/x/dao/types";
 
 // Msg defines the Msg service.
-service Msg {}
+service Msg {
+  // CreateWarehouse defines a rpc to create a voter.
+  rpc CreateVoter     (MsgCreateVoter    ) returns (MsgCreateVoterResponse    );
+  // UpdateVoter defines a rpc to update a voter.
+  rpc UpdateVoter     (MsgUpdateVoter    ) returns (MsgUpdateVoterResponse    );
+  // DeleteVoter defines a rpc to delete a voter.
+  rpc DeleteVoter     (MsgDeleteVoter    ) returns (MsgDeleteVoterResponse    );
+  
+  // CreateWarehouse defines a rpc to create a warehouse with the help of proposal.
+  rpc CreateWarehouse (MsgCreateWarehouse) returns (MsgCreateWarehouseResponse);
+  // UpdateWarehouse defines a rpc to update a warehouse with the help of proposal.
+  rpc UpdateWarehouse (MsgUpdateWarehouse) returns (MsgUpdateWarehouseResponse);
+  // DeleteWarehouse defines a rpc to delete a warehouse with the help of proposal.
+  rpc DeleteWarehouse (MsgDeleteWarehouse) returns (MsgDeleteWarehouseResponse);
+  
+  // CreateVote defines a rpc to create a vote.
+  rpc CreateVote (MsgCreateVote) returns (MsgCreateVoteResponse);
+  // UpdateVote defines a rpc to update a vote within voting period.
+  rpc UpdateVote (MsgUpdateVote) returns (MsgUpdateVoteResponse);
+  // DeleteVote defines a rpc to delete a vote within voting period.
+  rpc DeleteVote (MsgDeleteVote) returns (MsgDeleteVoteResponse);
+  
+  // CreateProposal defines a rpc to create a proposal.
+  rpc CreateProposal (MsgCreateProposal) returns (MsgCreateProposalResponse);
+  // UpdateProposal defines a rpc to update a proposal before voting started.
+  rpc UpdateProposal (MsgUpdateProposal) returns (MsgUpdateProposalResponse);
+  // DeleteProposal defines a rpc to delete a proposal.
+  rpc DeleteProposal (MsgDeleteProposal) returns (MsgDeleteProposalResponse);
+  // ExecuteProposal defines a rpc to execute a proposal which is in status Success.
+  rpc ExecuteProposal (MsgExecuteProposal) returns (MsgExecuteProposalResponse);
+}
+message MsgCreateWarehouse {
+  string creator   = 1;
+  string voters    = 2;
+  string threshold = 3;
+  string active    = 4;
+}
+
+message MsgCreateWarehouseResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateWarehouse {
+  string creator   = 1;
+  uint64 id        = 2;
+  string voters    = 3;
+  string threshold = 4;
+  string active    = 5;
+}
+
+message MsgUpdateWarehouseResponse {}
+
+message MsgDeleteWarehouse {
+  string creator = 1;
+  uint64 id      = 2;
+}
+
+message MsgDeleteWarehouseResponse {}
+
+message MsgCreateVote {
+  string   creator  = 1;
+  VoteType decision = 2;
+}
+
+message MsgCreateVoteResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateVote {
+  string   creator  = 1;
+  uint64   id       = 2;
+  VoteType decision = 3;
+}
+
+message MsgUpdateVoteResponse {}
+
+message MsgDeleteVote {
+  string creator = 1;
+  uint64 id      = 2;
+}
+
+message MsgDeleteVoteResponse {}
+
+message MsgCreateProposal {
+  string creator     = 1;
+  string title       = 2;
+  string description = 3;
+  string startAt     = 4;
+  string endAt       = 5;
+}
+
+message MsgCreateProposalResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateProposal {
+  string creator     = 1;
+  uint64 id          = 2;
+  string title       = 3;
+  string description = 4;
+  string startAt     = 5;
+  string endAt       = 6;
+}
+
+message MsgUpdateProposalResponse {}
+
+message MsgDeleteProposal {
+  string creator = 1;
+  uint64 id      = 2;
+}
+
+message MsgDeleteProposalResponse {}
+
+message MsgExecuteProposal {
+  string creator = 1;
+  uint64 id      = 2;
+}
+
+message MsgExecuteProposalResponse {}
+
+message MsgCreateVoter {
+  string creator = 1;
+  string address = 2;
+  uint32 weight  = 3;
+}
+
+message MsgCreateVoterResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateVoter {
+  string creator = 1;
+  uint64 id      = 2;
+  string address = 3;
+  uint32 weight  = 4;
+}
+
+message MsgUpdateVoterResponse {}
+
+message MsgDeleteVoter {
+  string creator = 1;
+  uint64 id      = 2;
+}
+
+message MsgDeleteVoterResponse {}
+

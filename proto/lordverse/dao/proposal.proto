@@ -1,0 +1,23 @@
+syntax = "proto3";
+package lordverse.dao;
+
+option go_package = "lordverse/x/dao/types";
+
+enum ProposalStatus {
+  PROPOSAL_STATUS_UNSPECIFIED = 0;
+  PROPOSAL_STATUS_SUCCESS = 1;
+  PROPOSAL_STATUS_FAILED = 2;
+  PROPOSAL_STATUS_CANCELLED = 3;
+  PROPOSAL_STATUS_EXPIRED = 4;
+  PROPOSAL_STATUS_EXECUTED = 5;
+}
+
+message Proposal {
+  uint64 id = 1;
+  string title = 2; 
+  string description = 3; 
+  string startAt = 4; 
+  string endAt = 5; 
+  ProposalStatus status = 6;
+  string creator = 7;
+}

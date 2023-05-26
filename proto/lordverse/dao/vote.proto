@@ -1,0 +1,16 @@
+syntax = "proto3";
+package lordverse.dao;
+
+option go_package = "lordverse/x/dao/types";
+
+enum VoteType {
+  VOTE_TYPE_UNSPECIFIED = 0;
+  VOTE_TYPE_YES = 1;
+  VOTE_TYPE_NO = 2;
+}
+
+message Vote {
+  uint64 id = 1;
+  VoteType decision = 2; 
+  string creator = 3;
+}
