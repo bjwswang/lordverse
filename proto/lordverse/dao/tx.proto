@@ -132,7 +132,6 @@ message MsgExecuteProposalResponse {}
 
 message MsgCreateVoter {
   string creator = 1;
-  string address = 2;
   uint32 weight  = 3;
 }
 
@@ -143,8 +142,7 @@ message MsgCreateVoterResponse {
 message MsgUpdateVoter {
   string creator = 1;
   uint64 id      = 2;
-  string address = 3;
-  uint32 weight  = 4;
+  uint32 weight  = 3;
 }
 
 message MsgUpdateVoterResponse {}

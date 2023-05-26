@@ -10,13 +10,21 @@ Typical steps to use `ignite cli` for cosmos development.
     ignite scaffold chain lordverse --no-module
 ```
 
-### 2. Create a module
+### 2. Serve the chain in Dev mode
+
+```shell
+    ignite chain serve
+```
+
+> Note: auto build when changes happend including protobuf
+
+### 3. Create a module
 
 ```shell
     ignite scaffold module lordverse --dep bank
 ```
 
-### 3. Create a Message
+### 4. Create a List
 
 `Message` is the core object in cosmos network.`ignite` provides code generation for `CRUD` on `Message`.
 
@@ -34,9 +42,9 @@ Typical steps to use `ignite cli` for cosmos development.
 
 <https://docs.ignite.com/clients/go-client>
 
-## How to do Tests?
+## Test with CLI
 
-TODO...
+> A CLI `{project}d` will be built automatically with command embeded in `{project}d tx xxx`
 
 ## Other Good Projects to help development
 
