@@ -4,13 +4,14 @@ package lordverse.dao;
 option go_package = "lordverse/x/dao/types";
 
 enum VoteType {
-  VOTE_TYPE_UNSPECIFIED = 0;
+  VOTE_TYPE_ABSTAIN = 0;
   VOTE_TYPE_YES = 1;
   VOTE_TYPE_NO = 2;
 }
 
 message Vote {
   uint64 id = 1;
-  VoteType decision = 2; 
-  string creator = 3;
+  uint64 proposalId = 2;
+  VoteType decision = 3; 
+  string creator = 4;
 }

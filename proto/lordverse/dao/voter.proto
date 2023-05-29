@@ -5,6 +5,6 @@ option go_package = "lordverse/x/dao/types";
 
 message Voter {
   uint64 id = 1;
-  uint32 weight = 2; 
-  string creator = 3;
+  uint64 weight = 2; 
+  string creator = 4;
 }

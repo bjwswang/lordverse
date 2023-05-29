@@ -17,6 +17,8 @@ limitations under the License.
 package types
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -30,13 +32,12 @@ const (
 
 var _ sdk.Msg = &MsgCreateProposal{}
 
-func NewMsgCreateProposal(creator string, title string, description string, startAt string, endAt string) *MsgCreateProposal {
+func NewMsgCreateProposal(creator string, title string, description string, expiration *time.Time) *MsgCreateProposal {
 	return &MsgCreateProposal{
 		Creator:     creator,
 		Title:       title,
 		Description: description,
-		StartAt:     startAt,
-		EndAt:       endAt,
+		Expiration:  expiration,
 	}
 }
 
@@ -71,14 +72,13 @@ func (msg *MsgCreateProposal) ValidateBasic() error {
 
 var _ sdk.Msg = &MsgUpdateProposal{}
 
-func NewMsgUpdateProposal(creator string, id uint64, title string, description string, startAt string, endAt string) *MsgUpdateProposal {
+func NewMsgUpdateProposal(creator string, id uint64, title string, description string, expiration *time.Time) *MsgUpdateProposal {
 	return &MsgUpdateProposal{
 		Id:          id,
 		Creator:     creator,
 		Title:       title,
 		Description: description,
-		StartAt:     startAt,
-		EndAt:       endAt,
+		Expiration:  expiration,
 	}
 }
 

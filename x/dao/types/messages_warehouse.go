@@ -23,18 +23,18 @@ import (
 
 const (
 	TypeMsgCreateWarehouse = "create_warehouse"
+	TypeMsgSignWarehouse   = "sign_warehouse"
 	TypeMsgUpdateWarehouse = "update_warehouse"
 	TypeMsgDeleteWarehouse = "delete_warehouse"
 )
 
 var _ sdk.Msg = &MsgCreateWarehouse{}
 
-func NewMsgCreateWarehouse(creator string, voters string, threshold string, active string) *MsgCreateWarehouse {
+func NewMsgCreateWarehouse(creator string, voters []uint64, threshold uint64) *MsgCreateWarehouse {
 	return &MsgCreateWarehouse{
 		Creator:   creator,
 		Voters:    voters,
 		Threshold: threshold,
-		Active:    active,
 	}
 }
 
@@ -69,13 +69,12 @@ func (msg *MsgCreateWarehouse) ValidateBasic() error {
 
 var _ sdk.Msg = &MsgUpdateWarehouse{}
 
-func NewMsgUpdateWarehouse(creator string, id uint64, voters string, threshold string, active string) *MsgUpdateWarehouse {
+func NewMsgUpdateWarehouse(creator string, id uint64, voters []uint64, threshold uint64) *MsgUpdateWarehouse {
 	return &MsgUpdateWarehouse{
 		Id:        id,
 		Creator:   creator,
 		Voters:    voters,
 		Threshold: threshold,
-		Active:    active,
 	}
 }
 
@@ -101,6 +100,45 @@ func (msg *MsgUpdateWarehouse) GetSignBytes() []byte {
 }
 
 func (msg *MsgUpdateWarehouse) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
+
+var _ sdk.Msg = &MsgSignWarehouse{}
+
+func NewMsgSignWarehouse(creator string, warehouseID uint64, voterID uint64) *MsgSignWarehouse {
+	return &MsgSignWarehouse{
+		Id:      warehouseID,
+		Voter:   voterID,
+		Creator: creator,
+	}
+}
+
+func (msg *MsgSignWarehouse) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgSignWarehouse) Type() string {
+	return TypeMsgSignWarehouse
+}
+
+func (msg *MsgSignWarehouse) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgSignWarehouse) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgSignWarehouse) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

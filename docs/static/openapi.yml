@@ -46240,14 +46240,18 @@ paths:
                       type: string
                     description:
                       type: string
-                    startAt:
+                    warehouse:
                       type: string
-                    endAt:
+                      format: uint64
+                      title: id of the warehouse
+                    expiration:
                       type: string
+                      format: date-time
                     status:
                       type: string
                       enum:
                         - PROPOSAL_STATUS_UNSPECIFIED
+                        - PROPOSAL_STATUS_VOTING
                         - PROPOSAL_STATUS_SUCCESS
                         - PROPOSAL_STATUS_FAILED
                         - PROPOSAL_STATUS_CANCELLED
@@ -46381,14 +46385,18 @@ paths:
                     type: string
                   description:
                     type: string
-                  startAt:
+                  warehouse:
                     type: string
-                  endAt:
+                    format: uint64
+                    title: id of the warehouse
+                  expiration:
                     type: string
+                    format: date-time
                   status:
                     type: string
                     enum:
                       - PROPOSAL_STATUS_UNSPECIFIED
+                      - PROPOSAL_STATUS_VOTING
                       - PROPOSAL_STATUS_SUCCESS
                       - PROPOSAL_STATUS_FAILED
                       - PROPOSAL_STATUS_CANCELLED
@@ -46440,13 +46448,16 @@ paths:
                     id:
                       type: string
                       format: uint64
+                    proposalId:
+                      type: string
+                      format: uint64
                     decision:
                       type: string
                       enum:
-                        - VOTE_TYPE_UNSPECIFIED
+                        - VOTE_TYPE_ABSTAIN
                         - VOTE_TYPE_YES
                         - VOTE_TYPE_NO
-                      default: VOTE_TYPE_UNSPECIFIED
+                      default: VOTE_TYPE_ABSTAIN
                     creator:
                       type: string
               pagination:
@@ -46570,13 +46581,16 @@ paths:
                   id:
                     type: string
                     format: uint64
+                  proposalId:
+                    type: string
+                    format: uint64
                   decision:
                     type: string
                     enum:
-                      - VOTE_TYPE_UNSPECIFIED
+                      - VOTE_TYPE_ABSTAIN
                       - VOTE_TYPE_YES
                       - VOTE_TYPE_NO
-                    default: VOTE_TYPE_UNSPECIFIED
+                    default: VOTE_TYPE_ABSTAIN
                   creator:
                     type: string
         default:
@@ -46623,8 +46637,8 @@ paths:
                       type: string
                       format: uint64
                     weight:
-                      type: integer
-                      format: int64
+                      type: string
+                      format: uint64
                     creator:
                       type: string
               pagination:
@@ -46749,8 +46763,8 @@ paths:
                     type: string
                     format: uint64
                   weight:
-                    type: integer
-                    format: int64
+                    type: string
+                    format: uint64
                   creator:
                     type: string
         default:
@@ -46797,14 +46811,26 @@ paths:
                       type: string
                       format: uint64
                     voters:
-                      type: string
+                      type: array
+                      items:
+                        type: string
+                        format: uint64
                       title: ids of the voters in the warehouse
                     threshold:
                       type: string
+                      format: uint64
+                      title: threshold within this warehouse
+                    signedVoters:
+                      type: object
+                      additionalProperties:
+                        type: boolean
+                      title: ids of the signed voters
                     active:
-                      type: string
+                      type: boolean
+                      title: status of the warehouse
                     creator:
                       type: string
+                      title: creator of the warehouse
               pagination:
                 type: object
                 properties:
@@ -46927,14 +46953,26 @@ paths:
                     type: string
                     format: uint64
                   voters:
-                    type: string
+                    type: array
+                    items:
+                      type: string
+                      format: uint64
                     title: ids of the voters in the warehouse
                   threshold:
                     type: string
+                    format: uint64
+                    title: threshold within this warehouse
+                  signedVoters:
+                    type: object
+                    additionalProperties:
+                      type: boolean
+                    title: ids of the signed voters
                   active:
-                    type: string
+                    type: boolean
+                    title: status of the warehouse
                   creator:
                     type: string
+                    title: creator of the warehouse
         default:
           description: An unexpected error response.
           schema:
@@ -75896,6 +75934,13 @@ definitions:
     type: object
   lordverse.dao.MsgExecuteProposalResponse:
     type: object
+  lordverse.dao.MsgSignWarehouseResponse:
+    type: object
+    properties:
+      signedVoters:
+        type: object
+        additionalProperties:
+          type: boolean
   lordverse.dao.MsgUpdateProposalResponse:
     type: object
   lordverse.dao.MsgUpdateVoteResponse:
@@ -75917,14 +75962,18 @@ definitions:
         type: string
       description:
         type: string
-      startAt:
+      warehouse:
         type: string
-      endAt:
+        format: uint64
+        title: id of the warehouse
+      expiration:
         type: string
+        format: date-time
       status:
         type: string
         enum:
           - PROPOSAL_STATUS_UNSPECIFIED
+          - PROPOSAL_STATUS_VOTING
           - PROPOSAL_STATUS_SUCCESS
           - PROPOSAL_STATUS_FAILED
           - PROPOSAL_STATUS_CANCELLED
@@ -75937,6 +75986,7 @@ definitions:
     type: string
     enum:
       - PROPOSAL_STATUS_UNSPECIFIED
+      - PROPOSAL_STATUS_VOTING
       - PROPOSAL_STATUS_SUCCESS
       - PROPOSAL_STATUS_FAILED
       - PROPOSAL_STATUS_CANCELLED
@@ -75958,14 +76008,18 @@ definitions:
               type: string
             description:
               type: string
-            startAt:
+            warehouse:
               type: string
-            endAt:
+              format: uint64
+              title: id of the warehouse
+            expiration:
               type: string
+              format: date-time
             status:
               type: string
               enum:
                 - PROPOSAL_STATUS_UNSPECIFIED
+                - PROPOSAL_STATUS_VOTING
                 - PROPOSAL_STATUS_SUCCESS
                 - PROPOSAL_STATUS_FAILED
                 - PROPOSAL_STATUS_CANCELLED
@@ -76011,13 +76065,16 @@ definitions:
             id:
               type: string
               format: uint64
+            proposalId:
+              type: string
+              format: uint64
             decision:
               type: string
               enum:
-                - VOTE_TYPE_UNSPECIFIED
+                - VOTE_TYPE_ABSTAIN
                 - VOTE_TYPE_YES
                 - VOTE_TYPE_NO
-              default: VOTE_TYPE_UNSPECIFIED
+              default: VOTE_TYPE_ABSTAIN
             creator:
               type: string
       pagination:
@@ -76058,8 +76115,8 @@ definitions:
               type: string
               format: uint64
             weight:
-              type: integer
-              format: int64
+              type: string
+              format: uint64
             creator:
               type: string
       pagination:
@@ -76100,14 +76157,26 @@ definitions:
               type: string
               format: uint64
             voters:
-              type: string
+              type: array
+              items:
+                type: string
+                format: uint64
               title: ids of the voters in the warehouse
             threshold:
               type: string
+              format: uint64
+              title: threshold within this warehouse
+            signedVoters:
+              type: object
+              additionalProperties:
+                type: boolean
+              title: ids of the signed voters
             active:
-              type: string
+              type: boolean
+              title: status of the warehouse
             creator:
               type: string
+              title: creator of the warehouse
       pagination:
         type: object
         properties:
@@ -76147,14 +76216,18 @@ definitions:
             type: string
           description:
             type: string
-          startAt:
+          warehouse:
             type: string
-          endAt:
+            format: uint64
+            title: id of the warehouse
+          expiration:
             type: string
+            format: date-time
           status:
             type: string
             enum:
               - PROPOSAL_STATUS_UNSPECIFIED
+              - PROPOSAL_STATUS_VOTING
               - PROPOSAL_STATUS_SUCCESS
               - PROPOSAL_STATUS_FAILED
               - PROPOSAL_STATUS_CANCELLED
@@ -76172,13 +76245,16 @@ definitions:
           id:
             type: string
             format: uint64
+          proposalId:
+            type: string
+            format: uint64
           decision:
             type: string
             enum:
-              - VOTE_TYPE_UNSPECIFIED
+              - VOTE_TYPE_ABSTAIN
               - VOTE_TYPE_YES
               - VOTE_TYPE_NO
-            default: VOTE_TYPE_UNSPECIFIED
+            default: VOTE_TYPE_ABSTAIN
           creator:
             type: string
   lordverse.dao.QueryGetVoterResponse:
@@ -76191,8 +76267,8 @@ definitions:
             type: string
             format: uint64
           weight:
-            type: integer
-            format: int64
+            type: string
+            format: uint64
           creator:
             type: string
   lordverse.dao.QueryGetWarehouseResponse:
@@ -76205,14 +76281,26 @@ definitions:
             type: string
             format: uint64
           voters:
-            type: string
+            type: array
+            items:
+              type: string
+              format: uint64
             title: ids of the voters in the warehouse
           threshold:
             type: string
+            format: uint64
+            title: threshold within this warehouse
+          signedVoters:
+            type: object
+            additionalProperties:
+              type: boolean
+            title: ids of the signed voters
           active:
-            type: string
+            type: boolean
+            title: status of the warehouse
           creator:
             type: string
+            title: creator of the warehouse
   lordverse.dao.QueryParamsResponse:
     type: object
     properties:
@@ -76226,22 +76314,25 @@ definitions:
       id:
         type: string
         format: uint64
+      proposalId:
+        type: string
+        format: uint64
       decision:
         type: string
         enum:
-          - VOTE_TYPE_UNSPECIFIED
+          - VOTE_TYPE_ABSTAIN
           - VOTE_TYPE_YES
           - VOTE_TYPE_NO
-        default: VOTE_TYPE_UNSPECIFIED
+        default: VOTE_TYPE_ABSTAIN
       creator:
         type: string
   lordverse.dao.VoteType:
     type: string
     enum:
-      - VOTE_TYPE_UNSPECIFIED
+      - VOTE_TYPE_ABSTAIN
       - VOTE_TYPE_YES
       - VOTE_TYPE_NO
-    default: VOTE_TYPE_UNSPECIFIED
+    default: VOTE_TYPE_ABSTAIN
   lordverse.dao.Voter:
     type: object
     properties:
@@ -76249,8 +76340,8 @@ definitions:
         type: string
         format: uint64
       weight:
-        type: integer
-        format: int64
+        type: string
+        format: uint64
       creator:
         type: string
   lordverse.dao.Warehouse:
@@ -76260,14 +76351,26 @@ definitions:
         type: string
         format: uint64
       voters:
-        type: string
+        type: array
+        items:
+          type: string
+          format: uint64
         title: ids of the voters in the warehouse
       threshold:
         type: string
+        format: uint64
+        title: threshold within this warehouse
+      signedVoters:
+        type: object
+        additionalProperties:
+          type: boolean
+        title: ids of the signed voters
       active:
-        type: string
+        type: boolean
+        title: status of the warehouse
       creator:
         type: string
+        title: creator of the warehouse
   lordverse.lordverse.Land:
     type: object
     properties:

@@ -47,6 +47,7 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdCreateWarehouse())
+	cmd.AddCommand(CmdSignWarehouse())
 	cmd.AddCommand(CmdUpdateWarehouse())
 	cmd.AddCommand(CmdDeleteWarehouse())
 	cmd.AddCommand(CmdCreateVote())

@@ -7,6 +7,9 @@ import "lordverse/dao/vote.proto";
 import "lordverse/dao/proposal.proto";
 import "lordverse/dao/voter.proto";
 
+import "google/protobuf/timestamp.proto";
+import "gogoproto/gogo.proto";
+
 option go_package = "lordverse/x/dao/types";
 
 // Msg defines the Msg service.
@@ -18,11 +21,15 @@ service Msg {
   // DeleteVoter defines a rpc to delete a voter.
   rpc DeleteVoter     (MsgDeleteVoter    ) returns (MsgDeleteVoterResponse    );
   
-  // CreateWarehouse defines a rpc to create a warehouse with the help of proposal.
+  // CreateWarehouse defines a rpc to create a warehouse.
   rpc CreateWarehouse (MsgCreateWarehouse) returns (MsgCreateWarehouseResponse);
-  // UpdateWarehouse defines a rpc to update a warehouse with the help of proposal.
+  // SignWarehouse defines a rpc to sign a warehouse by warehouse voter.
+  rpc SignWarehouse(MsgSignWarehouse) returns (MsgSignWarehouseResponse);
+  // UpdateWarehouse defines a rpc to update a warehouse.
+  // WONT BE IMPLEMENTED
   rpc UpdateWarehouse (MsgUpdateWarehouse) returns (MsgUpdateWarehouseResponse);
-  // DeleteWarehouse defines a rpc to delete a warehouse with the help of proposal.
+  // DeleteWarehouse defines a rpc to delete a warehouse.
+  // WONT BE IMPLEMENTED
   rpc DeleteWarehouse (MsgDeleteWarehouse) returns (MsgDeleteWarehouseResponse);
   
   // CreateVote defines a rpc to create a vote.
@@ -43,21 +50,31 @@ service Msg {
 }
 message MsgCreateWarehouse {
   string creator   = 1;
-  string voters    = 2;
-  string threshold = 3;
-  string active    = 4;
+  repeated uint64 voters    = 2;
+  uint64 threshold = 3;
 }
 
 message MsgCreateWarehouseResponse {
   uint64 id = 1;
 }
 
+message MsgSignWarehouse {
+  string creator   = 1;
+  // voter id.
+  uint64 voter = 2;
+  // id of the warehouse.
+  uint64 id = 3;
+}
+
+message MsgSignWarehouseResponse {
+  map<uint64,bool> signedVoters = 1;
+}
+
 message MsgUpdateWarehouse {
   string creator   = 1;
   uint64 id        = 2;
-  string voters    = 3;
-  string threshold = 4;
-  string active    = 5;
+  repeated uint64 voters    = 3;
+  uint64 threshold = 4;
 }
 
 message MsgUpdateWarehouseResponse {}
@@ -71,7 +88,8 @@ message MsgDeleteWarehouseResponse {}
 
 message MsgCreateVote {
   string   creator  = 1;
-  VoteType decision = 2;
+  uint64 proposalId = 2;
+  VoteType decision = 3;
 }
 
 message MsgCreateVoteResponse {
@@ -97,8 +115,7 @@ message MsgCreateProposal {
   string creator     = 1;
   string title       = 2;
   string description = 3;
-  string startAt     = 4;
-  string endAt       = 5;
+  google.protobuf.Timestamp expiration = 4 [(gogoproto.stdtime) = true]; 
 }
 
 message MsgCreateProposalResponse {
@@ -110,8 +127,7 @@ message MsgUpdateProposal {
   uint64 id          = 2;
   string title       = 3;
   string description = 4;
-  string startAt     = 5;
-  string endAt       = 6;
+  google.protobuf.Timestamp expiration = 5 [(gogoproto.stdtime) = true]; 
 }
 
 message MsgUpdateProposalResponse {}
@@ -132,7 +148,7 @@ message MsgExecuteProposalResponse {}
 
 message MsgCreateVoter {
   string creator = 1;
-  uint32 weight  = 3;
+  uint64 weight  = 3;
 }
 
 message MsgCreateVoterResponse {
@@ -142,7 +158,7 @@ message MsgCreateVoterResponse {
 message MsgUpdateVoter {
   string creator = 1;
   uint64 id      = 2;
-  uint32 weight  = 3;
+  uint64 weight  = 3;
 }
 
 message MsgUpdateVoterResponse {}

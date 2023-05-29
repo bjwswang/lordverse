@@ -20,9 +20,10 @@ import (
 	"context"
 	"fmt"
 
+	"lordverse/x/dao/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"lordverse/x/dao/types"
 )
 
 func (k msgServer) CreateVote(goCtx context.Context, msg *types.MsgCreateVote) (*types.MsgCreateVoteResponse, error) {
@@ -32,6 +33,26 @@ func (k msgServer) CreateVote(goCtx context.Context, msg *types.MsgCreateVote) (
 		Creator:  msg.Creator,
 		Decision: msg.Decision,
 	}
+
+	// Check proposal
+	proposal, found := k.GetProposal(ctx, msg.ProposalId)
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("proposal %d doesn't exist", msg.ProposalId))
+	}
+
+	// Check proposal status
+	if proposal.Status != types.ProposalStatus_PROPOSAL_STATUS_VOTING && proposal.Status != types.ProposalStatus_PROPOSAL_STATUS_UNSPECIFIED {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "proposal has finished")
+	}
+
+	// proposal not started yet
+	if ctx.BlockTime().Before(*proposal.Expiration) {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "proposal expired")
+	}
+
+	// proposal ended
+
+	// TODO: Check this voter in proposal's voter list
 
 	id := k.AppendVote(
 		ctx,

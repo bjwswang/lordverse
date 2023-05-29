@@ -19,7 +19,6 @@ package keeper
 import (
 	"context"
 	"fmt"
-
 	"lordverse/x/dao/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -33,8 +32,12 @@ func (k msgServer) CreateProposal(goCtx context.Context, msg *types.MsgCreatePro
 		Creator:     msg.Creator,
 		Title:       msg.Title,
 		Description: msg.Description,
-		StartAt:     msg.StartAt,
-		EndAt:       msg.EndAt,
+		Expiration:  msg.Expiration,
+	}
+
+	// Check that the proposal expiration time
+	if ctx.BlockTime().After(*msg.Expiration) {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "proposal expired time should be after current block time")
 	}
 
 	id := k.AppendProposal(
@@ -55,8 +58,7 @@ func (k msgServer) UpdateProposal(goCtx context.Context, msg *types.MsgUpdatePro
 		Id:          msg.Id,
 		Title:       msg.Title,
 		Description: msg.Description,
-		StartAt:     msg.StartAt,
-		EndAt:       msg.EndAt,
+		Expiration:  msg.Expiration,
 	}
 
 	// Checks that the element exists
@@ -68,6 +70,11 @@ func (k msgServer) UpdateProposal(goCtx context.Context, msg *types.MsgUpdatePro
 	// Checks if the msg creator is the same as the current owner
 	if msg.Creator != val.Creator {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
+	}
+
+	// Check that the proposal expiration time not changed
+	if !msg.Expiration.Equal(*val.Expiration) {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "proposal expired time can't be changed")
 	}
 
 	k.SetProposal(ctx, proposal)

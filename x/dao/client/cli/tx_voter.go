@@ -33,8 +33,7 @@ func CmdCreateVoter() *cobra.Command {
 		Short: "Create a new voter",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argWeight := args[0]
-			weight, err := strconv.ParseUint(argWeight, 10, 32)
+			argWeight, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -44,7 +43,7 @@ func CmdCreateVoter() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCreateVoter(clientCtx.GetFromAddress().String(), uint32(weight))
+			msg := types.NewMsgCreateVoter(clientCtx.GetFromAddress().String(), argWeight)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -68,9 +67,7 @@ func CmdUpdateVoter() *cobra.Command {
 				return err
 			}
 
-			// convert string to uint32
-			argWeight := args[1]
-			weight, err := strconv.ParseUint(argWeight, 10, 32)
+			argWeight, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -80,7 +77,7 @@ func CmdUpdateVoter() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateVoter(clientCtx.GetFromAddress().String(), id, uint32(weight))
+			msg := types.NewMsgUpdateVoter(clientCtx.GetFromAddress().String(), id, argWeight)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

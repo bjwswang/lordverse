@@ -35,7 +35,9 @@ func (k msgServer) CreateVoter(goCtx context.Context, msg *types.MsgCreateVoter)
 
 	var voter = types.Voter{
 		Creator: msg.Creator,
-		Weight:  msg.Weight,
+		// Always Set Weight to DefaultVoterWeight
+		// Weight:  msg.Weight,
+		Weight: DefaultVoterWeight,
 	}
 
 	id := k.AppendVoter(
@@ -54,7 +56,8 @@ func (k msgServer) UpdateVoter(goCtx context.Context, msg *types.MsgUpdateVoter)
 	var voter = types.Voter{
 		Creator: msg.Creator,
 		Id:      msg.Id,
-		Weight:  msg.Weight,
+		// Update on Weight is not allowed
+		// Weight:  msg.Weight,
 	}
 
 	// Checks that the element exists

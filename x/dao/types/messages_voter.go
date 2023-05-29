@@ -29,7 +29,7 @@ const (
 
 var _ sdk.Msg = &MsgCreateVoter{}
 
-func NewMsgCreateVoter(creator string, weight uint32) *MsgCreateVoter {
+func NewMsgCreateVoter(creator string, weight uint64) *MsgCreateVoter {
 	return &MsgCreateVoter{
 		Creator: creator,
 		Weight:  weight,
@@ -67,7 +67,7 @@ func (msg *MsgCreateVoter) ValidateBasic() error {
 
 var _ sdk.Msg = &MsgUpdateVoter{}
 
-func NewMsgUpdateVoter(creator string, id uint64, weight uint32) *MsgUpdateVoter {
+func NewMsgUpdateVoter(creator string, id uint64, weight uint64) *MsgUpdateVoter {
 	return &MsgUpdateVoter{
 		Id:      id,
 		Creator: creator,

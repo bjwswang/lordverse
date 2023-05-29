@@ -18,30 +18,69 @@ package cli
 
 import (
 	"strconv"
+	"strings"
+
+	"lordverse/x/dao/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
-	"lordverse/x/dao/types"
 )
 
 func CmdCreateWarehouse() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-warehouse [voters] [threshold] [active]",
+		Use:   "create-warehouse [voters] [threshold]",
 		Short: "Create a new warehouse",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argVoters := args[0]
-			argThreshold := args[1]
-			argActive := args[2]
+			argVoters := parseArgVoters(args[0])
+
+			argThreshold, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgCreateWarehouse(clientCtx.GetFromAddress().String(), argVoters, argThreshold, argActive)
+			msg := types.NewMsgCreateWarehouse(clientCtx.GetFromAddress().String(), argVoters, argThreshold)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdSignWarehouse() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "sign-warehouse [warehouse-id] [voter-id] ",
+		Short: "Sign a warehouse",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			warehouseID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			voterID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgSignWarehouse(clientCtx.GetFromAddress().String(), warehouseID, voterID)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -56,9 +95,9 @@ func CmdCreateWarehouse() *cobra.Command {
 
 func CmdUpdateWarehouse() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-warehouse [id] [voters] [threshold] [active]",
+		Use:   "update-warehouse [id] [voters] [threshold]",
 		Short: "Update a warehouse",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -66,17 +105,20 @@ func CmdUpdateWarehouse() *cobra.Command {
 			}
 
 			argVoters := args[1]
+			// convert argVoters to string array seperated by commas
+			argVotersArray := parseArgVoters(argVoters)
 
-			argThreshold := args[2]
-
-			argActive := args[3]
+			argThreshold, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgUpdateWarehouse(clientCtx.GetFromAddress().String(), id, argVoters, argThreshold, argActive)
+			msg := types.NewMsgUpdateWarehouse(clientCtx.GetFromAddress().String(), id, argVotersArray, argThreshold)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -116,4 +158,16 @@ func CmdDeleteWarehouse() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
+}
+
+// parseArgVoters parses a comma-separated string of voters into a slice of uint64 values.
+// If a value fails to parse, it is skipped and the next value is attempted.
+// Returns a slice of uint64 values.
+func parseArgVoters(voters string) []uint64 {
+	argVotersArray := strings.Split(voters, ",")
+	argVotersArrayUint64 := make([]uint64, len(argVotersArray))
+	for i, voter := range argVotersArray {
+		argVotersArrayUint64[i], _ = strconv.ParseUint(voter, 10, 64)
+	}
+	return argVotersArrayUint64
 }

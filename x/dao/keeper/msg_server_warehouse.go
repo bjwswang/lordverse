@@ -20,19 +20,43 @@ import (
 	"context"
 	"fmt"
 
+	"lordverse/x/dao/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"lordverse/x/dao/types"
 )
 
 func (k msgServer) CreateWarehouse(goCtx context.Context, msg *types.MsgCreateWarehouse) (*types.MsgCreateWarehouseResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	// Check voters
+	// 1. voter with same creator exist
+	// 2. voter is not duplicated
+	var voters = make(map[string]struct{})
+	var totalWeight uint64
+	for _, voterID := range msg.Voters {
+		voter, found := k.GetVoter(ctx, voterID)
+		if !found {
+			return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("voter %d doesn't exist", voterID))
+		}
+		_, found = voters[voter.Creator]
+		if found {
+			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("voter %d already exists", voterID))
+		}
+		voters[voter.Creator] = struct{}{}
+		totalWeight = voter.Weight + totalWeight
+	}
+	// Check threshold
+	if msg.Threshold > totalWeight {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("threshold %d is greater than total weight %d", msg.Threshold, totalWeight))
+	}
+
 	var warehouse = types.Warehouse{
 		Creator:   msg.Creator,
 		Voters:    msg.Voters,
 		Threshold: msg.Threshold,
-		Active:    msg.Active,
+		// Set to false by default
+		Active: false,
 	}
 
 	id := k.AppendWarehouse(
@@ -45,6 +69,51 @@ func (k msgServer) CreateWarehouse(goCtx context.Context, msg *types.MsgCreateWa
 	}, nil
 }
 
+func (k msgServer) SignWarehouse(goCtx context.Context, msg *types.MsgSignWarehouse) (*types.MsgSignWarehouseResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	warehouse, found := k.GetWarehouse(ctx, msg.Id)
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("warehouse %d doesn't exist", msg.Id))
+	}
+
+	// Check warehouse has been activated
+	if warehouse.Active {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("warehouse %d is already active", msg.Id))
+	}
+
+	// Check voter already signed
+	signedVoters := warehouse.SignedVoters
+	if signedVoters == nil {
+		signedVoters = make(map[uint64]bool)
+	}
+	if signedVoters[msg.Voter] {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("voter %d already signed", msg.Voter))
+	}
+
+	// Check voter
+	voter, found := k.GetVoter(ctx, msg.Voter)
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("voter %d doesn't exist", msg.Voter))
+	}
+	if voter.Creator != msg.Creator {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner of voter")
+	}
+
+	// Update warehouse's signed voters
+	signedVoters[msg.Voter] = true
+	warehouse.SignedVoters = signedVoters
+	// Set active to true if threshold is reached
+	if len(warehouse.SignedVoters) == len(warehouse.Voters) {
+		warehouse.Active = true
+	}
+	k.SetWarehouse(ctx, warehouse)
+
+	return &types.MsgSignWarehouseResponse{
+		SignedVoters: warehouse.SignedVoters,
+	}, nil
+}
+
 func (k msgServer) UpdateWarehouse(goCtx context.Context, msg *types.MsgUpdateWarehouse) (*types.MsgUpdateWarehouseResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -53,7 +122,6 @@ func (k msgServer) UpdateWarehouse(goCtx context.Context, msg *types.MsgUpdateWa
 		Id:        msg.Id,
 		Voters:    msg.Voters,
 		Threshold: msg.Threshold,
-		Active:    msg.Active,
 	}
 
 	// Checks that the element exists

@@ -6,8 +6,13 @@ option go_package = "lordverse/x/dao/types";
 message Warehouse {
   uint64 id = 1;
   // ids of the voters in the warehouse
-  string voters = 2; 
-  string threshold = 3; 
-  string active = 4; 
-  string creator = 5;
+  repeated uint64 voters = 2; 
+  // threshold within this warehouse
+  uint64 threshold = 3; 
+  // ids of the signed voters
+  map<uint64,bool> signedVoters = 4;
+  // status of the warehouse
+  bool active = 5; 
+  // creator of the warehouse
+  string creator = 6;
 }
