@@ -45,6 +45,15 @@ func (k msgServer) CreateVoter(goCtx context.Context, msg *types.MsgCreateVoter)
 		voter,
 	)
 
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvent(
+		types.NewEventCreateVoter(id, creator, voter.Weight),
+	)
+
 	return &types.MsgCreateVoterResponse{
 		Id: id,
 	}, nil
