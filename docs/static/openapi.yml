@@ -46250,12 +46250,19 @@ paths:
                     votedVoters:
                       type: object
                       additionalProperties:
-                        type: boolean
+                        type: string
+                        enum:
+                          - VOTE_TYPE_ABSTAIN
+                          - VOTE_TYPE_YES
+                          - VOTE_TYPE_NO
+                        default: VOTE_TYPE_ABSTAIN
                       title: ids of the voted voters
-                    totalVotes:
-                      type: string
-                      format: uint64
-                      title: total votes
+                    votes:
+                      type: array
+                      items:
+                        type: string
+                        format: uint64
+                      title: total votes of different vote type
                     status:
                       type: string
                       enum:
@@ -46401,12 +46408,19 @@ paths:
                   votedVoters:
                     type: object
                     additionalProperties:
-                      type: boolean
+                      type: string
+                      enum:
+                        - VOTE_TYPE_ABSTAIN
+                        - VOTE_TYPE_YES
+                        - VOTE_TYPE_NO
+                      default: VOTE_TYPE_ABSTAIN
                     title: ids of the voted voters
-                  totalVotes:
-                    type: string
-                    format: uint64
-                    title: total votes
+                  votes:
+                    type: array
+                    items:
+                      type: string
+                      format: uint64
+                    title: total votes of different vote type
                   status:
                     type: string
                     enum:
@@ -75766,13 +75780,6 @@ definitions:
   lordverse.dao.MsgVoteProposalResponse:
     type: object
     properties:
-      votedVoters:
-        type: object
-        additionalProperties:
-          type: boolean
-      totalVotes:
-        type: string
-        format: uint64
       status:
         type: string
         enum:
@@ -75804,12 +75811,19 @@ definitions:
       votedVoters:
         type: object
         additionalProperties:
-          type: boolean
+          type: string
+          enum:
+            - VOTE_TYPE_ABSTAIN
+            - VOTE_TYPE_YES
+            - VOTE_TYPE_NO
+          default: VOTE_TYPE_ABSTAIN
         title: ids of the voted voters
-      totalVotes:
-        type: string
-        format: uint64
-        title: total votes
+      votes:
+        type: array
+        items:
+          type: string
+          format: uint64
+        title: total votes of different vote type
       status:
         type: string
         enum:
@@ -75853,12 +75867,19 @@ definitions:
             votedVoters:
               type: object
               additionalProperties:
-                type: boolean
+                type: string
+                enum:
+                  - VOTE_TYPE_ABSTAIN
+                  - VOTE_TYPE_YES
+                  - VOTE_TYPE_NO
+                default: VOTE_TYPE_ABSTAIN
               title: ids of the voted voters
-            totalVotes:
-              type: string
-              format: uint64
-              title: total votes
+            votes:
+              type: array
+              items:
+                type: string
+                format: uint64
+              title: total votes of different vote type
             status:
               type: string
               enum:
@@ -76018,12 +76039,19 @@ definitions:
           votedVoters:
             type: object
             additionalProperties:
-              type: boolean
+              type: string
+              enum:
+                - VOTE_TYPE_ABSTAIN
+                - VOTE_TYPE_YES
+                - VOTE_TYPE_NO
+              default: VOTE_TYPE_ABSTAIN
             title: ids of the voted voters
-          totalVotes:
-            type: string
-            format: uint64
-            title: total votes
+          votes:
+            type: array
+            items:
+              type: string
+              format: uint64
+            title: total votes of different vote type
           status:
             type: string
             enum:

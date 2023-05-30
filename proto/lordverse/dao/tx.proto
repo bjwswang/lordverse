@@ -114,9 +114,7 @@ message MsgVoteProposal {
 }
 
 message MsgVoteProposalResponse {
-  map<uint64,bool> votedVoters = 1;
-  uint64 totalVotes = 2;
-  ProposalStatus status = 3;
+  ProposalStatus status = 1;
 }
 
 message MsgDeleteProposal {

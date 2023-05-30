@@ -21,9 +21,9 @@ message Proposal {
   uint64 warehouse = 4;
   google.protobuf.Timestamp expiration = 5 [(gogoproto.stdtime) = true]; 
   // ids of the voted voters
-  map<uint64,bool> votedVoters = 6;
-  // total votes
-  uint64 totalVotes = 7;
+  map<uint64,VoteType> votedVoters = 6;
+  // total votes of different vote type
+  repeated uint64 votes = 7;
   ProposalStatus status = 8;
   string creator = 9;
 }

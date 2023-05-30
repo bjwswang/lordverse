@@ -47,6 +47,7 @@ func (k msgServer) CreateProposal(goCtx context.Context, msg *types.MsgCreatePro
 		Title:       msg.Title,
 		Description: msg.Description,
 		Expiration:  msg.Expiration,
+		Votes:       make([]uint64, types.VoteType_VOTE_TYPE_NO+1),
 	}
 
 	id := k.AppendProposal(
@@ -107,9 +108,9 @@ func (k msgServer) VoteProposal(goCtx context.Context, msg *types.MsgVoteProposa
 	// Check whether the voter already voted
 	votedVoters := proposal.GetVotedVoters()
 	if votedVoters == nil {
-		votedVoters = make(map[uint64]bool)
+		votedVoters = make(map[uint64]types.VoteType)
 	}
-	if votedVoters[msg.VoterID] {
+	if _, ok := votedVoters[msg.VoterID]; ok {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "already voted")
 	}
 
@@ -121,9 +122,7 @@ func (k msgServer) VoteProposal(goCtx context.Context, msg *types.MsgVoteProposa
 		k.SetProposal(ctx, proposal)
 
 		return &types.MsgVoteProposalResponse{
-			VotedVoters: votedVoters,
-			TotalVotes:  proposal.TotalVotes,
-			Status:      types.ProposalStatus_PROPOSAL_STATUS_FAILED,
+			Status: proposal.Status,
 		}, nil
 	}
 
@@ -147,19 +146,38 @@ func (k msgServer) VoteProposal(goCtx context.Context, msg *types.MsgVoteProposa
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not a correct warehouse voter")
 	}
 
-	// All checks passed, vote
-	votedVoters[msg.VoterID] = true
-	proposal.TotalVotes = proposal.TotalVotes + voter.Weight
-	if proposal.TotalVotes >= warehouse.Threshold {
-		proposal.Status = types.ProposalStatus_PROPOSAL_STATUS_SUCCESS
+	// All checks passed, record vote
+	votedVoters[msg.VoterID] = msg.Decision
+	votes := proposal.GetVotes()
+	if votes == nil {
+		votes = make([]uint64, types.VoteType_VOTE_TYPE_NO+1)
 	}
+	votes[msg.Decision]++
+
+	// Update the proposal
+	if votes[types.VoteType_VOTE_TYPE_YES] >= warehouse.Threshold {
+		proposal.Status = types.ProposalStatus_PROPOSAL_STATUS_SUCCESS
+	} else {
+		var totalVotes uint64
+		for _, voterID := range warehouse.Voters {
+			voter, found := k.GetVoter(ctx, voterID)
+			if !found {
+				return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("voter %d in warehouse doesn't exist", voterID))
+			}
+			totalVotes += voter.Weight
+		}
+		// When Votes(NO+Abstain) > (TotalVotes-Threshold), threshold never reached,mark proposal as failed
+		if votes[types.VoteType_VOTE_TYPE_NO]+votes[types.VoteType_VOTE_TYPE_ABSTAIN]+warehouse.Threshold > totalVotes {
+			proposal.Status = types.ProposalStatus_PROPOSAL_STATUS_FAILED
+		}
+	}
+
 	proposal.VotedVoters = votedVoters
+	proposal.Votes = votes
 	k.SetProposal(ctx, proposal)
 
 	return &types.MsgVoteProposalResponse{
-		VotedVoters: votedVoters,
-		TotalVotes:  proposal.TotalVotes,
-		Status:      types.ProposalStatus_PROPOSAL_STATUS_FAILED,
+		Status: proposal.Status,
 	}, nil
 }
 
@@ -177,26 +195,19 @@ func (k msgServer) DeleteProposal(goCtx context.Context, msg *types.MsgDeletePro
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
 	}
 
-	k.RemoveProposal(ctx, msg.Id)
+	// Check that the proposal status
+	if val.Status != types.ProposalStatus_PROPOSAL_STATUS_VOTING {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "proposal can be canceled only when status should be PROPOSAL_STATUS_VOTING")
+	}
+
+	val.Status = types.ProposalStatus_PROPOSAL_STATUS_CANCELLED
+
+	k.SetProposal(ctx, val)
 
 	return &types.MsgDeleteProposalResponse{}, nil
 }
 
 func (k msgServer) ExecuteProposal(goCtx context.Context, msg *types.MsgExecuteProposal) (*types.MsgExecuteProposalResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// Checks that the element exists
-	val, found := k.GetProposal(ctx, msg.Id)
-	if !found {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", msg.Id))
-	}
-
-	// Checks if the msg creator is the same as the current owner
-	if msg.Creator != val.Creator {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
-	}
-
-	k.RemoveProposal(ctx, msg.Id)
-
+	// TODO: implement code
 	return &types.MsgExecuteProposalResponse{}, nil
 }
