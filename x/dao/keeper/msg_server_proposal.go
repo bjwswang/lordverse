@@ -28,14 +28,6 @@ import (
 func (k msgServer) CreateProposal(goCtx context.Context, msg *types.MsgCreateProposal) (*types.MsgCreateProposalResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	var proposal = types.Proposal{
-		Warehouse:   msg.Warehouse,
-		Creator:     msg.Creator,
-		Title:       msg.Title,
-		Description: msg.Description,
-		Expiration:  msg.Expiration,
-	}
-
 	// Check that the proposal expiration time
 	if ctx.BlockTime().After(*msg.Expiration) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "proposal expired time should be after current block time")
@@ -47,6 +39,14 @@ func (k msgServer) CreateProposal(goCtx context.Context, msg *types.MsgCreatePro
 	}
 	if !warehouse.Active {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("warehouse %d is not active", msg.Warehouse))
+	}
+
+	var proposal = types.Proposal{
+		Warehouse:   msg.Warehouse,
+		Creator:     msg.Creator,
+		Title:       msg.Title,
+		Description: msg.Description,
+		Expiration:  msg.Expiration,
 	}
 
 	id := k.AppendProposal(
@@ -74,8 +74,8 @@ func (k msgServer) UpdateProposal(goCtx context.Context, msg *types.MsgUpdatePro
 	}
 
 	// Check that the proposal status
-	if proposal.Status != types.ProposalStatus_PROPOSAL_STATUS_UNSPECIFIED && proposal.Status != types.ProposalStatus_PROPOSAL_STATUS_VOTING {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "proposal status should be PROPOSAL_STATUS_UNSPECIFIED or PROPOSAL_STATUS_VOTING")
+	if proposal.Status != types.ProposalStatus_PROPOSAL_STATUS_VOTING {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "proposal status should be PROPOSAL_STATUS_VOTING")
 	}
 	// Check that the proposal expiration time
 	if !proposal.Expiration.After(ctx.BlockTime()) {
@@ -89,6 +89,78 @@ func (k msgServer) UpdateProposal(goCtx context.Context, msg *types.MsgUpdatePro
 	}
 
 	return &types.MsgUpdateProposalResponse{}, nil
+}
+
+func (k msgServer) VoteProposal(goCtx context.Context, msg *types.MsgVoteProposal) (*types.MsgVoteProposalResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// Checks that the proposal exists
+	proposal, found := k.GetProposal(ctx, msg.Id)
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("proposal %d doesn't exist", msg.Id))
+	}
+	// Check that the proposal status
+	if proposal.Status != types.ProposalStatus_PROPOSAL_STATUS_VOTING {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "proposal status should be PROPOSAL_STATUS_VOTING")
+	}
+
+	// Check whether the voter already voted
+	votedVoters := proposal.GetVotedVoters()
+	if votedVoters == nil {
+		votedVoters = make(map[uint64]bool)
+	}
+	if votedVoters[msg.VoterID] {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "already voted")
+	}
+
+	// Check that the proposal expiration time
+	// Current status is voting,but excceeds the expiration time
+	if !proposal.Expiration.After(ctx.BlockTime()) {
+		// set proposal as expired
+		proposal.Status = types.ProposalStatus_PROPOSAL_STATUS_FAILED
+		k.SetProposal(ctx, proposal)
+
+		return &types.MsgVoteProposalResponse{
+			VotedVoters: votedVoters,
+			TotalVotes:  proposal.TotalVotes,
+			Status:      types.ProposalStatus_PROPOSAL_STATUS_FAILED,
+		}, nil
+	}
+
+	// Check the voter
+	// 1. voter exists
+	voter, found := k.GetVoter(ctx, msg.VoterID)
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("voter %d doesn't exist", msg.VoterID))
+	}
+	// 2. message sender is the voter owner
+	if voter.Creator != msg.Creator {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect voter owner")
+	}
+	// 3. warehouse exists
+	warehouse, found := k.GetWarehouse(ctx, proposal.Warehouse)
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("proposal %d 's warehouse %d doesn't exist", proposal.Id, proposal.Warehouse))
+	}
+	// 4. voter is in warehouse voter list
+	if !warehouse.SignedVoters[msg.VoterID] {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not a correct warehouse voter")
+	}
+
+	// All checks passed, vote
+	votedVoters[msg.VoterID] = true
+	proposal.TotalVotes = proposal.TotalVotes + voter.Weight
+	if proposal.TotalVotes >= warehouse.Threshold {
+		proposal.Status = types.ProposalStatus_PROPOSAL_STATUS_SUCCESS
+	}
+	proposal.VotedVoters = votedVoters
+	k.SetProposal(ctx, proposal)
+
+	return &types.MsgVoteProposalResponse{
+		VotedVoters: votedVoters,
+		TotalVotes:  proposal.TotalVotes,
+		Status:      types.ProposalStatus_PROPOSAL_STATUS_FAILED,
+	}, nil
 }
 
 func (k msgServer) DeleteProposal(goCtx context.Context, msg *types.MsgDeleteProposal) (*types.MsgDeleteProposalResponse, error) {

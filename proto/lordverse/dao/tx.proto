@@ -35,6 +35,8 @@ service Msg {
   rpc CreateProposal (MsgCreateProposal) returns (MsgCreateProposalResponse);
   // UpdateProposal defines a rpc to update a proposal before voting started.
   rpc UpdateProposal (MsgUpdateProposal) returns (MsgUpdateProposalResponse);
+  // Vote defines a rpc to vote on a proposal.
+  rpc VoteProposal (MsgVoteProposal) returns (MsgVoteProposalResponse);
   // DeleteProposal defines a rpc to delete a proposal.
   rpc DeleteProposal (MsgDeleteProposal) returns (MsgDeleteProposalResponse);
   // ExecuteProposal defines a rpc to execute a proposal which is in status Success.
@@ -100,6 +102,22 @@ message MsgUpdateProposal {
 }
 
 message MsgUpdateProposalResponse {}
+
+message MsgVoteProposal {
+  string creator     = 1;
+  // id of the proposal
+  uint64 id          = 2;
+  // id of the voter
+  uint64 voterID     = 3;
+  // decision of the voter
+  VoteType decision = 4;
+}
+
+message MsgVoteProposalResponse {
+  map<uint64,bool> votedVoters = 1;
+  uint64 totalVotes = 2;
+  ProposalStatus status = 3;
+}
 
 message MsgDeleteProposal {
   string creator = 1;

@@ -26,6 +26,7 @@ import (
 const (
 	TypeMsgCreateProposal  = "create_proposal"
 	TypeMsgUpdateProposal  = "update_proposal"
+	TypeMsgVoteProposal    = "vote_proposal"
 	TypeMsgDeleteProposal  = "delete_proposal"
 	TypeMsgExecuteProposal = "execute_proposal"
 )
@@ -107,6 +108,56 @@ func (msg *MsgUpdateProposal) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
+	return nil
+}
+
+var _ sdk.Msg = &MsgVoteProposal{}
+
+func NewMsgVoteProposal(creator string, id uint64, voterID uint64, decision VoteType) *MsgVoteProposal {
+	return &MsgVoteProposal{
+		Id:       id,
+		VoterID:  voterID,
+		Creator:  creator,
+		Decision: decision,
+	}
+}
+
+func (msg *MsgVoteProposal) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgVoteProposal) Type() string {
+	return TypeMsgVoteProposal
+}
+
+func (msg *MsgVoteProposal) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgVoteProposal) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgVoteProposal) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+
+	// validate vote type
+	switch msg.Decision {
+	case VoteType_VOTE_TYPE_ABSTAIN:
+	case VoteType_VOTE_TYPE_YES:
+	case VoteType_VOTE_TYPE_NO:
+	default:
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid vote type %d", msg.Decision)
+	}
+
 	return nil
 }
 

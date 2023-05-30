@@ -52,6 +52,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdDeleteWarehouse())
 	cmd.AddCommand(CmdCreateProposal())
 	cmd.AddCommand(CmdUpdateProposal())
+	cmd.AddCommand(CmdVoteProposal())
 	cmd.AddCommand(CmdDeleteProposal())
 	cmd.AddCommand(CmdCreateVoter())
 	cmd.AddCommand(CmdUpdateVoter())

@@ -97,6 +97,81 @@ func CmdUpdateProposal() *cobra.Command {
 	return cmd
 }
 
+// func CmdVoteProposal() *cobra.Command {
+// 	cmd := &cobra.Command{
+// 		Use:   "vote-proposal [id] [voter-id] [decision]",
+// 		Short: "Vote a proposal",
+// 		Args:  cobra.ExactArgs(3),
+// 		RunE: func(cmd *cobra.Command, args []string) (err error) {
+// // 			argProposalId, err := strconv.ParseUint(args[0], 10, 64)
+// // 			if err != nil {
+// // 				return err
+// // 			}
+
+// // 			argDecision, err := strconv.ParseUint(args[1], 10, 64)
+// // 			if err != nil {
+// // 				return err
+// // 			}
+// // vote := types.VoteType(argDecision)
+
+// // clientCtx, err := client.GetClientTxContext(cmd)
+// // if err != nil {
+// // 	return err
+// // }
+
+// // msg := types.NewMsgVoteProposal(clientCtx.GetFromAddress().String(), argProposalId, vote)
+// // if err := msg.ValidateBasic(); err != nil {
+// // 	return err
+// // }
+// // return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+// return nil,nil
+
+// 	}
+// }
+// 	flags.AddTxFlagsToCmd(cmd)
+
+// 	return cmd
+// }
+
+func CmdVoteProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "vote-proposal [proposal-id] [voter-id] [decision]",
+		Short: "vote a proposal by id",
+		Long:  "vote a proposal by id. decision can be 0,1,2 which is abstain, yes, no",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			proposalID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			voterID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			// 0: abstain 1: yes 2: no
+			decision, err := strconv.ParseInt(args[2], 10, 32)
+			if err != nil {
+				return err
+			}
+
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgVoteProposal(clientCtx.GetFromAddress().String(), proposalID, voterID, types.VoteType(decision))
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
 func CmdDeleteProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delete-proposal [id]",
@@ -156,25 +231,3 @@ func parseDuration(s string) (time.Time, error) {
 	// Return the future time
 	return future, nil
 }
-
-// argProposalId, err := strconv.ParseUint(args[0], 10, 64)
-// if err != nil {
-// 	return err
-// }
-
-// argDecision, err := strconv.ParseUint(args[1], 10, 64)
-// if err != nil {
-// 	return err
-// }
-// vote := types.VoteType(argDecision)
-
-// clientCtx, err := client.GetClientTxContext(cmd)
-// if err != nil {
-// 	return err
-// }
-
-// msg := types.NewMsgCreateVote(clientCtx.GetFromAddress().String(), argProposalId, vote)
-// if err := msg.ValidateBasic(); err != nil {
-// 	return err
-// }
-// return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)

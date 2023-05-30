@@ -28,7 +28,7 @@ lordversed query dao list-voter
 
 echo "Create Warehouse with threshold 2 and voters 0,1"
 
-lordversed tx dao  create-warehouse 0,1 1 --from alice --yes
+lordversed tx dao  create-warehouse 0,1 2 --from alice --yes
 
 echo "Get Warehouse"
 
@@ -42,10 +42,15 @@ echo "Get Warehouse"
 lordversed query dao list-warehouse
 
 echo "Create a proposal"
-lordversed tx dao create-proposal  0 "create-network-1" "I want to create a network" 1days20hours0minutes0seconds  --from alice --yes
+lordversed tx dao create-proposal  0 "create-network-1" "I want to create a network" 0days0hours10minutes0seconds  --from alice --yes
 
 echo "Get Proposal"
 lordversed query dao list-proposal
 
 echo "Update Proposal"
 lordversed tx dao update-proposal  0 "I want to update a network" --from alice --yes
+
+
+echo "Vote Proposal"
+lordversed tx dao vote-proposal 1 0 1  --from alice --yes
+lordversed tx dao vote-proposal 1 1 1  --from bob --yes
