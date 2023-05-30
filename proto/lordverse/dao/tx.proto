@@ -3,7 +3,6 @@ syntax = "proto3";
 package lordverse.dao;
 
 import "lordverse/dao/warehouse.proto";
-import "lordverse/dao/vote.proto";
 import "lordverse/dao/proposal.proto";
 import "lordverse/dao/voter.proto";
 
@@ -32,13 +31,6 @@ service Msg {
   // WONT BE IMPLEMENTED
   rpc DeleteWarehouse (MsgDeleteWarehouse) returns (MsgDeleteWarehouseResponse);
   
-  // CreateVote defines a rpc to create a vote.
-  rpc CreateVote (MsgCreateVote) returns (MsgCreateVoteResponse);
-  // UpdateVote defines a rpc to update a vote within voting period.
-  rpc UpdateVote (MsgUpdateVote) returns (MsgUpdateVoteResponse);
-  // DeleteVote defines a rpc to delete a vote within voting period.
-  rpc DeleteVote (MsgDeleteVote) returns (MsgDeleteVoteResponse);
-  
   // CreateProposal defines a rpc to create a proposal.
   rpc CreateProposal (MsgCreateProposal) returns (MsgCreateProposalResponse);
   // UpdateProposal defines a rpc to update a proposal before voting started.
@@ -48,6 +40,7 @@ service Msg {
   // ExecuteProposal defines a rpc to execute a proposal which is in status Success.
   rpc ExecuteProposal (MsgExecuteProposal) returns (MsgExecuteProposalResponse);
 }
+
 message MsgCreateWarehouse {
   string creator   = 1;
   repeated uint64 voters    = 2;
@@ -86,36 +79,14 @@ message MsgDeleteWarehouse {
 
 message MsgDeleteWarehouseResponse {}
 
-message MsgCreateVote {
-  string   creator  = 1;
-  uint64 proposalId = 2;
-  VoteType decision = 3;
-}
-
-message MsgCreateVoteResponse {
-  uint64 id = 1;
-}
-
-message MsgUpdateVote {
-  string   creator  = 1;
-  uint64   id       = 2;
-  VoteType decision = 3;
-}
-
-message MsgUpdateVoteResponse {}
-
-message MsgDeleteVote {
-  string creator = 1;
-  uint64 id      = 2;
-}
-
-message MsgDeleteVoteResponse {}
 
 message MsgCreateProposal {
   string creator     = 1;
   string title       = 2;
   string description = 3;
   google.protobuf.Timestamp expiration = 4 [(gogoproto.stdtime) = true]; 
+    // id of the warehouse
+  uint64 warehouse = 5;
 }
 
 message MsgCreateProposalResponse {
@@ -125,9 +96,7 @@ message MsgCreateProposalResponse {
 message MsgUpdateProposal {
   string creator     = 1;
   uint64 id          = 2;
-  string title       = 3;
   string description = 4;
-  google.protobuf.Timestamp expiration = 5 [(gogoproto.stdtime) = true]; 
 }
 
 message MsgUpdateProposalResponse {}
@@ -145,6 +114,18 @@ message MsgExecuteProposal {
 }
 
 message MsgExecuteProposalResponse {}
+
+
+// message MsgCreateVote {
+//   string   creator  = 1;
+//   uint64 proposalId = 2;
+//   uint64 voterId = 3;
+//   VoteType decision = 4;
+// }
+
+// message MsgCreateVoteResponse {
+//   uint64 id = 1;
+// }
 
 message MsgCreateVoter {
   string creator = 1;

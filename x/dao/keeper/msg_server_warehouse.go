@@ -103,7 +103,7 @@ func (k msgServer) SignWarehouse(goCtx context.Context, msg *types.MsgSignWareho
 	// Update warehouse's signed voters
 	signedVoters[msg.Voter] = true
 	warehouse.SignedVoters = signedVoters
-	// Set active to true if threshold is reached
+	// Set active to true if all voters are signed
 	if len(warehouse.SignedVoters) == len(warehouse.Voters) {
 		warehouse.Active = true
 	}

@@ -19,11 +19,12 @@ package dao_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	keepertest "lordverse/testutil/keeper"
 	"lordverse/testutil/nullify"
 	"lordverse/x/dao"
 	"lordverse/x/dao/types"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenesis(t *testing.T) {
@@ -39,15 +40,6 @@ func TestGenesis(t *testing.T) {
 			},
 		},
 		WarehouseCount: 2,
-		VoteList: []types.Vote{
-			{
-				Id: 0,
-			},
-			{
-				Id: 1,
-			},
-		},
-		VoteCount: 2,
 		ProposalList: []types.Proposal{
 			{
 				Id: 0,
@@ -79,8 +71,6 @@ func TestGenesis(t *testing.T) {
 
 	require.ElementsMatch(t, genesisState.WarehouseList, got.WarehouseList)
 	require.Equal(t, genesisState.WarehouseCount, got.WarehouseCount)
-	require.ElementsMatch(t, genesisState.VoteList, got.VoteList)
-	require.Equal(t, genesisState.VoteCount, got.VoteCount)
 	require.ElementsMatch(t, genesisState.ProposalList, got.ProposalList)
 	require.Equal(t, genesisState.ProposalCount, got.ProposalCount)
 	require.ElementsMatch(t, genesisState.VoterList, got.VoterList)

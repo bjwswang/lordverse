@@ -32,12 +32,17 @@ import (
 
 func CmdCreateProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-proposal [title] [description] [start-at] [end-at]",
+		Use:   "create-proposal [warehouse-id] [title] [description] [expiration]",
 		Short: "Create a new proposal",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argTitle := args[0]
-			argDescription := args[1]
+			warehouseID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			argTitle := args[1]
+			argDescription := args[2]
 			argExpiration, err := parseDuration(args[3])
 			if err != nil {
 				return err
@@ -48,7 +53,7 @@ func CmdCreateProposal() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCreateProposal(clientCtx.GetFromAddress().String(), argTitle, argDescription, &argExpiration)
+			msg := types.NewMsgCreateProposal(clientCtx.GetFromAddress().String(), warehouseID, argTitle, argDescription, &argExpiration)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -63,30 +68,23 @@ func CmdCreateProposal() *cobra.Command {
 
 func CmdUpdateProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-proposal [id] [title] [description] [start-at] [end-at]",
+		Use:   "update-proposal [id] [description]",
 		Short: "Update a proposal",
-		Args:  cobra.ExactArgs(5),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			argTitle := args[1]
-
-			argDescription := args[2]
-
-			argExpiration, err := parseDuration(args[3])
-			if err != nil {
-				return err
-			}
+			argDescription := args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgUpdateProposal(clientCtx.GetFromAddress().String(), id, argTitle, argDescription, &argExpiration)
+			msg := types.NewMsgUpdateProposal(clientCtx.GetFromAddress().String(), id, argDescription)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -138,7 +136,7 @@ func parseDuration(s string) (time.Time, error) {
 	r := regexp.MustCompile(`(\d+)days(\d+)hours(\d+)minutes(\d+)seconds`)
 	matches := r.FindStringSubmatch(s)
 	if len(matches) != 5 {
-		return time.Time{}, errors.New("invalid duration format")
+		return time.Time{}, errors.New("invalid duration format,should be in the format of \"xdaysxhoursxminutesxseconds\"")
 	}
 
 	// Parse the duration components into integers
@@ -158,3 +156,25 @@ func parseDuration(s string) (time.Time, error) {
 	// Return the future time
 	return future, nil
 }
+
+// argProposalId, err := strconv.ParseUint(args[0], 10, 64)
+// if err != nil {
+// 	return err
+// }
+
+// argDecision, err := strconv.ParseUint(args[1], 10, 64)
+// if err != nil {
+// 	return err
+// }
+// vote := types.VoteType(argDecision)
+
+// clientCtx, err := client.GetClientTxContext(cmd)
+// if err != nil {
+// 	return err
+// }
+
+// msg := types.NewMsgCreateVote(clientCtx.GetFromAddress().String(), argProposalId, vote)
+// if err := msg.ValidateBasic(); err != nil {
+// 	return err
+// }
+// return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)

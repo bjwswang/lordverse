@@ -25,11 +25,9 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateWarehouse{}, "dao/CreateWarehouse", nil)
+	cdc.RegisterConcrete(&MsgSignWarehouse{}, "dao/SignWarehouse", nil)
 	cdc.RegisterConcrete(&MsgUpdateWarehouse{}, "dao/UpdateWarehouse", nil)
 	cdc.RegisterConcrete(&MsgDeleteWarehouse{}, "dao/DeleteWarehouse", nil)
-	cdc.RegisterConcrete(&MsgCreateVote{}, "dao/CreateVote", nil)
-	cdc.RegisterConcrete(&MsgUpdateVote{}, "dao/UpdateVote", nil)
-	cdc.RegisterConcrete(&MsgDeleteVote{}, "dao/DeleteVote", nil)
 	cdc.RegisterConcrete(&MsgCreateProposal{}, "dao/CreateProposal", nil)
 	cdc.RegisterConcrete(&MsgUpdateProposal{}, "dao/UpdateProposal", nil)
 	cdc.RegisterConcrete(&MsgDeleteProposal{}, "dao/DeleteProposal", nil)
@@ -44,11 +42,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgCreateWarehouse{},
 		&MsgUpdateWarehouse{},
 		&MsgDeleteWarehouse{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgCreateVote{},
-		&MsgUpdateVote{},
-		&MsgDeleteVote{},
+		&MsgSignWarehouse{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCreateProposal{},

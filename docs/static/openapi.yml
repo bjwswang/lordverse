@@ -46451,6 +46451,9 @@ paths:
                     proposalId:
                       type: string
                       format: uint64
+                    voterId:
+                      type: string
+                      format: uint64
                     decision:
                       type: string
                       enum:
@@ -46582,6 +46585,9 @@ paths:
                     type: string
                     format: uint64
                   proposalId:
+                    type: string
+                    format: uint64
+                  voterId:
                     type: string
                     format: uint64
                   decision:
@@ -76068,6 +76074,9 @@ definitions:
             proposalId:
               type: string
               format: uint64
+            voterId:
+              type: string
+              format: uint64
             decision:
               type: string
               enum:
@@ -76248,6 +76257,9 @@ definitions:
           proposalId:
             type: string
             format: uint64
+          voterId:
+            type: string
+            format: uint64
           decision:
             type: string
             enum:
@@ -76315,6 +76327,9 @@ definitions:
         type: string
         format: uint64
       proposalId:
+        type: string
+        format: uint64
+      voterId:
         type: string
         format: uint64
       decision:

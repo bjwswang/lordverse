@@ -32,9 +32,10 @@ const (
 
 var _ sdk.Msg = &MsgCreateProposal{}
 
-func NewMsgCreateProposal(creator string, title string, description string, expiration *time.Time) *MsgCreateProposal {
+func NewMsgCreateProposal(creator string, warehouse uint64, title string, description string, expiration *time.Time) *MsgCreateProposal {
 	return &MsgCreateProposal{
 		Creator:     creator,
+		Warehouse:   warehouse,
 		Title:       title,
 		Description: description,
 		Expiration:  expiration,
@@ -72,13 +73,11 @@ func (msg *MsgCreateProposal) ValidateBasic() error {
 
 var _ sdk.Msg = &MsgUpdateProposal{}
 
-func NewMsgUpdateProposal(creator string, id uint64, title string, description string, expiration *time.Time) *MsgUpdateProposal {
+func NewMsgUpdateProposal(creator string, id uint64, description string) *MsgUpdateProposal {
 	return &MsgUpdateProposal{
 		Id:          id,
 		Creator:     creator,
-		Title:       title,
 		Description: description,
-		Expiration:  expiration,
 	}
 }
 

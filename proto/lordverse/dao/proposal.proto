@@ -26,3 +26,9 @@ message Proposal {
   ProposalStatus status = 6;
   string creator = 7;
 }
+
+enum VoteType {
+  VOTE_TYPE_ABSTAIN = 0;
+  VOTE_TYPE_YES = 1;
+  VOTE_TYPE_NO = 2;
+}

@@ -17,9 +17,10 @@ limitations under the License.
 package dao
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"lordverse/x/dao/keeper"
 	"lordverse/x/dao/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // InitGenesis initializes the module's state from a provided genesis state.
@@ -31,17 +32,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 	// Set warehouse count
 	k.SetWarehouseCount(ctx, genState.WarehouseCount)
-	// Set all the vote
-	for _, elem := range genState.VoteList {
-		k.SetVote(ctx, elem)
-	}
-
-	// Set vote count
-	k.SetVoteCount(ctx, genState.VoteCount)
-	// Set all the proposal
-	for _, elem := range genState.ProposalList {
-		k.SetProposal(ctx, elem)
-	}
 
 	// Set proposal count
 	k.SetProposalCount(ctx, genState.ProposalCount)
@@ -63,8 +53,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.WarehouseList = k.GetAllWarehouse(ctx)
 	genesis.WarehouseCount = k.GetWarehouseCount(ctx)
-	genesis.VoteList = k.GetAllVote(ctx)
-	genesis.VoteCount = k.GetVoteCount(ctx)
 	genesis.ProposalList = k.GetAllProposal(ctx)
 	genesis.ProposalCount = k.GetProposalCount(ctx)
 	genesis.VoterList = k.GetAllVoter(ctx)

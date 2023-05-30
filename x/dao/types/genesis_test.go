@@ -19,8 +19,9 @@ package types_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"lordverse/x/dao/types"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
@@ -47,15 +48,6 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				WarehouseCount: 2,
-				VoteList: []types.Vote{
-					{
-						Id: 0,
-					},
-					{
-						Id: 1,
-					},
-				},
-				VoteCount: 2,
 				ProposalList: []types.Proposal{
 					{
 						Id: 0,
@@ -101,32 +93,6 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				WarehouseCount: 0,
-			},
-			valid: false,
-		},
-		{
-			desc: "duplicated vote",
-			genState: &types.GenesisState{
-				VoteList: []types.Vote{
-					{
-						Id: 0,
-					},
-					{
-						Id: 0,
-					},
-				},
-			},
-			valid: false,
-		},
-		{
-			desc: "invalid vote count",
-			genState: &types.GenesisState{
-				VoteList: []types.Vote{
-					{
-						Id: 1,
-					},
-				},
-				VoteCount: 0,
 			},
 			valid: false,
 		},

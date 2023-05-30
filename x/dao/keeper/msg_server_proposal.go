@@ -29,6 +29,7 @@ func (k msgServer) CreateProposal(goCtx context.Context, msg *types.MsgCreatePro
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	var proposal = types.Proposal{
+		Warehouse:   msg.Warehouse,
 		Creator:     msg.Creator,
 		Title:       msg.Title,
 		Description: msg.Description,
@@ -38,6 +39,14 @@ func (k msgServer) CreateProposal(goCtx context.Context, msg *types.MsgCreatePro
 	// Check that the proposal expiration time
 	if ctx.BlockTime().After(*msg.Expiration) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "proposal expired time should be after current block time")
+	}
+	// Check that the warehouse exists and has been activated
+	warehouse, found := k.GetWarehouse(ctx, msg.Warehouse)
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("warehouse %d doesn't exist", msg.Warehouse))
+	}
+	if !warehouse.Active {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("warehouse %d is not active", msg.Warehouse))
 	}
 
 	id := k.AppendProposal(
@@ -53,31 +62,31 @@ func (k msgServer) CreateProposal(goCtx context.Context, msg *types.MsgCreatePro
 func (k msgServer) UpdateProposal(goCtx context.Context, msg *types.MsgUpdateProposal) (*types.MsgUpdateProposalResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	var proposal = types.Proposal{
-		Creator:     msg.Creator,
-		Id:          msg.Id,
-		Title:       msg.Title,
-		Description: msg.Description,
-		Expiration:  msg.Expiration,
-	}
-
 	// Checks that the element exists
-	val, found := k.GetProposal(ctx, msg.Id)
+	proposal, found := k.GetProposal(ctx, msg.Id)
 	if !found {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", msg.Id))
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("proposal %d doesn't exist", msg.Id))
 	}
 
 	// Checks if the msg creator is the same as the current owner
-	if msg.Creator != val.Creator {
+	if msg.Creator != proposal.Creator {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
 	}
 
-	// Check that the proposal expiration time not changed
-	if !msg.Expiration.Equal(*val.Expiration) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "proposal expired time can't be changed")
+	// Check that the proposal status
+	if proposal.Status != types.ProposalStatus_PROPOSAL_STATUS_UNSPECIFIED && proposal.Status != types.ProposalStatus_PROPOSAL_STATUS_VOTING {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "proposal status should be PROPOSAL_STATUS_UNSPECIFIED or PROPOSAL_STATUS_VOTING")
+	}
+	// Check that the proposal expiration time
+	if !proposal.Expiration.After(ctx.BlockTime()) {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "proposal has expired")
 	}
 
-	k.SetProposal(ctx, proposal)
+	// Update the proposal
+	if proposal.Description != msg.Description {
+		proposal.Description = msg.Description
+		k.SetProposal(ctx, proposal)
+	}
 
 	return &types.MsgUpdateProposalResponse{}, nil
 }

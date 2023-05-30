@@ -19,14 +19,15 @@ package dao
 import (
 	"math/rand"
 
+	"lordverse/testutil/sample"
+	daosimulation "lordverse/x/dao/simulation"
+	"lordverse/x/dao/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"lordverse/testutil/sample"
-	daosimulation "lordverse/x/dao/simulation"
-	"lordverse/x/dao/types"
 )
 
 // avoid unused import issue
@@ -50,18 +51,6 @@ const (
 	opWeightMsgDeleteWarehouse = "op_weight_msg_warehouse"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgDeleteWarehouse int = 100
-
-	opWeightMsgCreateVote = "op_weight_msg_vote"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgCreateVote int = 100
-
-	opWeightMsgUpdateVote = "op_weight_msg_vote"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgUpdateVote int = 100
-
-	opWeightMsgDeleteVote = "op_weight_msg_vote"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgDeleteVote int = 100
 
 	opWeightMsgCreateProposal = "op_weight_msg_proposal"
 	// TODO: Determine the simulation weight value
@@ -109,17 +98,6 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 			},
 		},
 		WarehouseCount: 2,
-		VoteList: []types.Vote{
-			{
-				Id:      0,
-				Creator: sample.AccAddress(),
-			},
-			{
-				Id:      1,
-				Creator: sample.AccAddress(),
-			},
-		},
-		VoteCount: 2,
 		ProposalList: []types.Proposal{
 			{
 				Id:      0,
@@ -190,39 +168,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgDeleteWarehouse,
 		daosimulation.SimulateMsgDeleteWarehouse(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgCreateVote int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateVote, &weightMsgCreateVote, nil,
-		func(_ *rand.Rand) {
-			weightMsgCreateVote = defaultWeightMsgCreateVote
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateVote,
-		daosimulation.SimulateMsgCreateVote(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgUpdateVote int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateVote, &weightMsgUpdateVote, nil,
-		func(_ *rand.Rand) {
-			weightMsgUpdateVote = defaultWeightMsgUpdateVote
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgUpdateVote,
-		daosimulation.SimulateMsgUpdateVote(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgDeleteVote int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteVote, &weightMsgDeleteVote, nil,
-		func(_ *rand.Rand) {
-			weightMsgDeleteVote = defaultWeightMsgDeleteVote
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgDeleteVote,
-		daosimulation.SimulateMsgDeleteVote(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgCreateProposal int
@@ -320,30 +265,6 @@ func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.Wei
 			defaultWeightMsgDeleteWarehouse,
 			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
 				daosimulation.SimulateMsgDeleteWarehouse(am.accountKeeper, am.bankKeeper, am.keeper)
-				return nil
-			},
-		),
-		simulation.NewWeightedProposalMsg(
-			opWeightMsgCreateVote,
-			defaultWeightMsgCreateVote,
-			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
-				daosimulation.SimulateMsgCreateVote(am.accountKeeper, am.bankKeeper, am.keeper)
-				return nil
-			},
-		),
-		simulation.NewWeightedProposalMsg(
-			opWeightMsgUpdateVote,
-			defaultWeightMsgUpdateVote,
-			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
-				daosimulation.SimulateMsgUpdateVote(am.accountKeeper, am.bankKeeper, am.keeper)
-				return nil
-			},
-		),
-		simulation.NewWeightedProposalMsg(
-			opWeightMsgDeleteVote,
-			defaultWeightMsgDeleteVote,
-			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
-				daosimulation.SimulateMsgDeleteVote(am.accountKeeper, am.bankKeeper, am.keeper)
 				return nil
 			},
 		),

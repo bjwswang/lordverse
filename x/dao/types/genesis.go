@@ -27,7 +27,6 @@ const DefaultIndex uint64 = 1
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		WarehouseList: []Warehouse{},
-		VoteList:      []Vote{},
 		ProposalList:  []Proposal{},
 		VoterList:     []Voter{},
 		// this line is used by starport scaffolding # genesis/types/default
@@ -49,18 +48,6 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("warehouse id should be lower or equal than the last id")
 		}
 		warehouseIdMap[elem.Id] = true
-	}
-	// Check for duplicated ID in vote
-	voteIdMap := make(map[uint64]bool)
-	voteCount := gs.GetVoteCount()
-	for _, elem := range gs.VoteList {
-		if _, ok := voteIdMap[elem.Id]; ok {
-			return fmt.Errorf("duplicated id for vote")
-		}
-		if elem.Id >= voteCount {
-			return fmt.Errorf("vote id should be lower or equal than the last id")
-		}
-		voteIdMap[elem.Id] = true
 	}
 	// Check for duplicated ID in proposal
 	proposalIdMap := make(map[uint64]bool)
