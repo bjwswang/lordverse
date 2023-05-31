@@ -86,20 +86,20 @@ func (k msgServer) UpdateVoter(goCtx context.Context, msg *types.MsgUpdateVoter)
 }
 
 func (k msgServer) DeleteVoter(goCtx context.Context, msg *types.MsgDeleteVoter) (*types.MsgDeleteVoterResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+	// ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// Checks that the element exists
-	val, found := k.GetVoter(ctx, msg.Id)
-	if !found {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", msg.Id))
-	}
+	// // Checks that the element exists
+	// val, found := k.GetVoter(ctx, msg.Id)
+	// if !found {
+	// 	return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", msg.Id))
+	// }
 
-	// Checks if the msg creator is the same as the current owner
-	if msg.Creator != val.Creator {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
-	}
+	// // Checks if the msg creator is the same as the current owner
+	// if msg.Creator != val.Creator {
+	// 	return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
+	// }
 
-	k.RemoveVoter(ctx, msg.Id)
+	// k.RemoveVoter(ctx, msg.Id)
 
 	return &types.MsgDeleteVoterResponse{}, nil
 }

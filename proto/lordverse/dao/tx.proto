@@ -111,6 +111,8 @@ message MsgVoteProposal {
   uint64 voterID     = 3;
   // decision of the voter
   VoteType decision = 4;
+  // explanation of the decision
+  string explanation = 5;
 }
 
 message MsgVoteProposalResponse {

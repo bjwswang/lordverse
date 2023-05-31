@@ -141,20 +141,20 @@ func (k msgServer) UpdateWarehouse(goCtx context.Context, msg *types.MsgUpdateWa
 }
 
 func (k msgServer) DeleteWarehouse(goCtx context.Context, msg *types.MsgDeleteWarehouse) (*types.MsgDeleteWarehouseResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+	// ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// Checks that the element exists
-	val, found := k.GetWarehouse(ctx, msg.Id)
-	if !found {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", msg.Id))
-	}
+	// // Checks that the element exists
+	// val, found := k.GetWarehouse(ctx, msg.Id)
+	// if !found {
+	// 	return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", msg.Id))
+	// }
 
-	// Checks if the msg creator is the same as the current owner
-	if msg.Creator != val.Creator {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
-	}
+	// // Checks if the msg creator is the same as the current owner
+	// if msg.Creator != val.Creator {
+	// 	return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
+	// }
 
-	k.RemoveWarehouse(ctx, msg.Id)
+	// k.RemoveWarehouse(ctx, msg.Id)
 
 	return &types.MsgDeleteWarehouseResponse{}, nil
 }

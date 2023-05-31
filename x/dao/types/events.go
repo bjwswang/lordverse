@@ -24,9 +24,14 @@ import (
 
 const (
 	EventTypeCreateVoter = "create_voter"
-	AttributeKeyVoterID  = "id"
+	AttributeKeyVoterID  = "voter_id"
 	AttributeKeyCreator  = "creator"
 	AttributeKeyWeight   = "weight"
+
+	EventTypeVoteProposal   = "vote_proposal"
+	AttributeKeyProposalID  = "proposal_id"
+	AttributeKeyDecision    = "decision"
+	AttributeKeyExplanation = "explanation"
 )
 
 func NewEventCreateVoter(id uint64, creator sdk.AccAddress, weight uint64) sdk.Event {
@@ -35,5 +40,15 @@ func NewEventCreateVoter(id uint64, creator sdk.AccAddress, weight uint64) sdk.E
 		sdk.NewAttribute(AttributeKeyVoterID, fmt.Sprintf("%d", id)),
 		sdk.NewAttribute(AttributeKeyCreator, creator.String()),
 		sdk.NewAttribute(AttributeKeyWeight, fmt.Sprintf("%d", weight)),
+	)
+}
+
+func NewEventVoteProposal(proposalID uint64, voterID uint64, decision VoteType, explanation string) sdk.Event {
+	return sdk.NewEvent(
+		EventTypeVoteProposal,
+		sdk.NewAttribute(AttributeKeyProposalID, fmt.Sprintf("%d", proposalID)),
+		sdk.NewAttribute(AttributeKeyVoterID, fmt.Sprintf("%d", voterID)),
+		sdk.NewAttribute(AttributeKeyDecision, decision.String()),
+		sdk.NewAttribute(AttributeKeyExplanation, explanation),
 	)
 }

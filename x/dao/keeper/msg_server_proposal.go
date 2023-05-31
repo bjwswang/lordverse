@@ -176,6 +176,8 @@ func (k msgServer) VoteProposal(goCtx context.Context, msg *types.MsgVoteProposa
 	proposal.Votes = votes
 	k.SetProposal(ctx, proposal)
 
+	ctx.EventManager().EmitEvent(types.NewEventVoteProposal(msg.Id, msg.VoterID, msg.Decision, msg.Explanation))
+
 	return &types.MsgVoteProposalResponse{
 		Status: proposal.Status,
 	}, nil

@@ -135,7 +135,7 @@ func CmdUpdateProposal() *cobra.Command {
 
 func CmdVoteProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vote-proposal [proposal-id] [voter-id] [decision]",
+		Use:   "vote-proposal [proposal-id] [voter-id] [decision] [explanation]",
 		Short: "vote a proposal by id",
 		Long:  "vote a proposal by id. decision can be 0,1,2 which is abstain, yes, no",
 		Args:  cobra.ExactArgs(3),
@@ -154,12 +154,14 @@ func CmdVoteProposal() *cobra.Command {
 				return err
 			}
 
+			explanation := args[3]
+
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgVoteProposal(clientCtx.GetFromAddress().String(), proposalID, voterID, types.VoteType(decision))
+			msg := types.NewMsgVoteProposal(clientCtx.GetFromAddress().String(), proposalID, voterID, types.VoteType(decision), explanation)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

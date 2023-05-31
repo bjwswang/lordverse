@@ -113,12 +113,13 @@ func (msg *MsgUpdateProposal) ValidateBasic() error {
 
 var _ sdk.Msg = &MsgVoteProposal{}
 
-func NewMsgVoteProposal(creator string, id uint64, voterID uint64, decision VoteType) *MsgVoteProposal {
+func NewMsgVoteProposal(creator string, id uint64, voterID uint64, decision VoteType, explanation string) *MsgVoteProposal {
 	return &MsgVoteProposal{
-		Id:       id,
-		VoterID:  voterID,
-		Creator:  creator,
-		Decision: decision,
+		Id:          id,
+		VoterID:     voterID,
+		Creator:     creator,
+		Decision:    decision,
+		Explanation: explanation,
 	}
 }
 
